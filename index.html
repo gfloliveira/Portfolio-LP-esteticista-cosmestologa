@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atelier de Beleza — Esteticista & Cosmetóloga</title>
+    <meta name="description" content="Protocolos personalizados com técnicas avançadas para revelar a beleza natural da sua pele.">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <style>
+        /* =============================================
+           Design System — CSS Custom Properties
+        ============================================= */
+        :root {
+            --color-bg:            #FAF9F6;
+            --color-bg-warm:       #FDFBF7;
+            --color-primary-gold:  #C5A059;
+            --color-gold-light:    #E6C280;
+            --color-gold-dark:     #A8854A;
+            --color-accent:        #D4AF37;
+            --color-text-dark:     #1C1A17;
+            --color-text-muted:    #7A7568;
+            --color-text-light:    #B0A898;
+
+            --font-serif: 'Cormorant Garamond', Georgia, serif;
+            --font-sans:  'Jost', sans-serif;
+
+            --ease-elegant: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-smooth:  cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        /* =============================================
+           Reset & Base
+        ============================================= */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 16px;
+        }
+
+        body {
+            background-color: var(--color-bg);
+            color: var(--color-text-dark);
+            font-family: var(--font-sans);
+            font-weight: 300;
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        /* =============================================
+           Custom Cursor
+        ============================================= */
+        .cursor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 7px;
+            height: 7px;
+            background: var(--color-primary-gold);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            will-change: transform;
+        }
+
+        .cursor-ring {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 34px;
+            height: 34px;
+            border: 1px solid rgba(197, 160, 89, 0.55);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            transform: translate(-50%, -50%);
+            will-change: transform;
+            transition: opacity 0.3s ease;
+        }
+
+        /* =============================================
+           Loader
+        ============================================= */
+        .loader {
+            position: fixed;
+            inset: 0;
+            background: var(--color-bg);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .loader__wordmark {
+            font-family: var(--font-serif);
+            font-size: 1.25rem;
+            font-weight: 300;
+            letter-spacing: 0.45em;
+            text-transform: uppercase;
+            color: var(--color-text-dark);
+            opacity: 0;
+        }
+
+        .loader__bar-wrap {
+            width: 160px;
+            height: 1px;
+            overflow: hidden;
+            background: rgba(197, 160, 89, 0.15);
+        }
+
+        .loader__bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(to right, var(--color-primary-gold), var(--color-gold-light));
+        }
+
+        /* =============================================
+           Navigation
+        ============================================= */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 200;
+            padding: 30px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav__logo {
+            font-family: var(--font-serif);
+            font-size: 1.05rem;
+            font-weight: 300;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--color-text-dark);
+            text-decoration: none;
+            opacity: 0;
+            transform: translateY(-8px);
+        }
+
+        .nav__logo span {
+            color: var(--color-primary-gold);
+        }
+
+        .nav__menu {
+            list-style: none;
+            display: flex;
+            gap: 48px;
+            opacity: 0;
+            transform: translateY(-8px);
+        }
+
+        .nav__menu a {
+            font-family: var(--font-sans);
+            font-size: 0.68rem;
+            font-weight: 400;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--color-text-muted);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .nav__menu a:hover {
+            color: var(--color-primary-gold);
+        }
+
+        /* =============================================
+           Hero Section
+        ============================================= */
+        .hero {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            min-height: 680px;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            background: var(--color-bg);
+        }
+
+        /* Ambient gradient background */
+        .hero__ambient {
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 70% 60% at 75% 35%, rgba(197, 160, 89, 0.08) 0%, transparent 100%),
+                radial-gradient(ellipse 50% 50% at 15% 75%, rgba(197, 160, 89, 0.05) 0%, transparent 100%),
+                linear-gradient(160deg, #FDFCF9 0%, #FAF8F3 50%, #F6F2EB 100%);
+        }
+
+        /* Right-side image column */
+        .hero__image-col {
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 46%;
+            overflow: hidden;
+            opacity: 0;
+        }
+
+        .hero__image-col::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            /* Veil: fades left edge into the background */
+            background: linear-gradient(
+                to right,
+                var(--color-bg) 0%,
+                rgba(250, 249, 246, 0.6) 30%,
+                rgba(250, 249, 246, 0.15) 100%
+            );
+            z-index: 2;
+        }
+
+        .hero__image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
+            /*
+             * ── SUBSTITUIR ──────────────────────────────────────────
+             * Troque o src abaixo pela foto real da profissional.
+             * Dimensões ideais: 900×1200 px, formato .webp ou .jpg.
+             * ────────────────────────────────────────────────────────
+             */
+            background:
+                radial-gradient(ellipse 80% 80% at 50% 40%, rgba(230, 194, 128, 0.18) 0%, transparent 70%),
+                linear-gradient(155deg, #EFE8DC 0%, #E3D6C5 35%, #D8CABC 65%, #CCBCAA 100%);
+        }
+
+        /* Main content wrapper */
+        .hero__content {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 60px;
+        }
+
+        .hero__text {
+            max-width: 600px;
+        }
+
+        /* Eyebrow label */
+        .hero__eyebrow {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            font-family: var(--font-sans);
+            font-size: 0.66rem;
+            font-weight: 400;
+            letter-spacing: 0.38em;
+            text-transform: uppercase;
+            color: var(--color-primary-gold);
+            margin-bottom: 30px;
+            opacity: 0;
+            transform: translateY(16px);
+        }
+
+        .hero__eyebrow::before {
+            content: '';
+            flex-shrink: 0;
+            width: 36px;
+            height: 1px;
+            background: var(--color-primary-gold);
+        }
+
+        /* Main title */
+        .hero__title {
+            font-family: var(--font-serif);
+            font-weight: 300;
+            font-size: clamp(3rem, 5.2vw, 5.8rem);
+            line-height: 1.06;
+            letter-spacing: -0.01em;
+            color: var(--color-text-dark);
+            margin-bottom: 36px;
+        }
+
+        /* Each line is clipped — inner span slides up on entrance */
+        .title-line {
+            display: block;
+            overflow: hidden;
+            padding-bottom: 0.06em; /* avoids descender clip */
+        }
+
+        .title-line__inner {
+            display: block;
+            transform: translateY(105%);
+        }
+
+        .hero__title em {
+            font-style: italic;
+            color: var(--color-primary-gold);
+            font-weight: 300;
+        }
+
+        /* Subtitle */
+        .hero__subtitle {
+            font-family: var(--font-sans);
+            font-size: 0.93rem;
+            font-weight: 300;
+            line-height: 1.9;
+            color: var(--color-text-muted);
+            max-width: 400px;
+            margin-bottom: 56px;
+            opacity: 0;
+            transform: translateY(18px);
+        }
+
+        /* CTA group */
+        .hero__cta {
+            display: flex;
+            align-items: center;
+            gap: 44px;
+            opacity: 0;
+            transform: translateY(18px);
+        }
+
+        /* Primary button */
+        .btn-gold {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 16px;
+            padding: 17px 38px;
+            border: 1px solid var(--color-primary-gold);
+            border-radius: 2px;
+            background: transparent;
+            font-family: var(--font-sans);
+            font-size: 0.68rem;
+            font-weight: 400;
+            letter-spacing: 0.28em;
+            text-transform: uppercase;
+            color: var(--color-text-dark);
+            text-decoration: none;
+            cursor: none;
+            overflow: hidden;
+            transition: color 0.45s var(--ease-elegant);
+        }
+
+        .btn-gold::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--color-primary-gold);
+            transform: translateY(102%);
+            transition: transform 0.5s var(--ease-elegant);
+        }
+
+        .btn-gold:hover::before {
+            transform: translateY(0);
+        }
+
+        .btn-gold:hover {
+            color: #FAF9F6;
+        }
+
+        .btn-gold__label,
+        .btn-gold__arrow {
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-gold__arrow {
+            display: block;
+            width: 16px;
+            height: 1px;
+            background: currentColor;
+            transition: width 0.35s ease;
+        }
+
+        .btn-gold:hover .btn-gold__arrow {
+            width: 26px;
+        }
+
+        /* Ghost link */
+        .btn-ghost {
+            font-family: var(--font-sans);
+            font-size: 0.68rem;
+            font-weight: 400;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--color-text-muted);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            transition: color 0.3s ease;
+        }
+
+        .btn-ghost::after {
+            content: '';
+            display: block;
+            width: 22px;
+            height: 1px;
+            background: currentColor;
+            transition: width 0.35s ease;
+        }
+
+        .btn-ghost:hover {
+            color: var(--color-primary-gold);
+        }
+
+        .btn-ghost:hover::after {
+            width: 38px;
+        }
+
+        /* =============================================
+           Floating Decorative Elements
+        ============================================= */
+        .hero__deco {
+            position: absolute;
+            inset: 0;
+            z-index: 5;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        /* Vertical hair-line */
+        .deco-vline {
+            position: absolute;
+            top: 14%;
+            right: 43%;
+            width: 1px;
+            height: 170px;
+            background: linear-gradient(to bottom, transparent, var(--color-primary-gold) 50%, transparent);
+            opacity: 0;
+            transform: scaleY(0);
+            transform-origin: top center;
+        }
+
+        /* Large ring — top-left */
+        .deco-ring-lg {
+            position: absolute;
+            top: 6%;
+            left: 4%;
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            border: 1px solid rgba(197, 160, 89, 0.22);
+            opacity: 0;
+        }
+
+        /* Small ring — mid */
+        .deco-ring-sm {
+            position: absolute;
+            bottom: 18%;
+            right: 47%;
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            border: 1px solid rgba(197, 160, 89, 0.3);
+            opacity: 0;
+        }
+
+        /* Particle cluster */
+        .deco-dot {
+            position: absolute;
+            border-radius: 50%;
+            background: var(--color-primary-gold);
+            opacity: 0;
+        }
+
+        .deco-dot--a { width: 4px; height: 4px; top: 29%; left: 51%; }
+        .deco-dot--b { width: 2px; height: 2px; top: 31%; left: 53%; }
+        .deco-dot--c { width: 3px; height: 3px; top: 27%; left: 50%; }
+
+        /* Horizontal thin rule */
+        .deco-hrule {
+            position: absolute;
+            bottom: 21%;
+            left: 52%;
+            width: 90px;
+            height: 1px;
+            background: linear-gradient(to right, var(--color-primary-gold), transparent);
+            opacity: 0;
+        }
+
+        /* =============================================
+           Scroll Indicator
+        ============================================= */
+        .scroll-hint {
+            position: absolute;
+            bottom: 46px;
+            left: 60px;
+            z-index: 10;
+            display: flex;
+            align-items: flex-end;
+            gap: 14px;
+            opacity: 0;
+        }
+
+        .scroll-hint__track {
+            width: 1px;
+            height: 58px;
+            background: rgba(197, 160, 89, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scroll-hint__track::after {
+            content: '';
+            position: absolute;
+            top: -100%;
+            left: 0;
+            width: 100%;
+            height: 60%;
+            background: linear-gradient(to bottom, transparent, var(--color-primary-gold));
+            animation: scrollPulse 2.8s ease-in-out infinite;
+        }
+
+        @keyframes scrollPulse {
+            0%   { top: -60%; opacity: 0; }
+            20%  { opacity: 1; }
+            80%  { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+
+        .scroll-hint__label {
+            font-family: var(--font-sans);
+            font-size: 0.58rem;
+            font-weight: 400;
+            letter-spacing: 0.32em;
+            text-transform: uppercase;
+            color: var(--color-text-light);
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+        }
+
+        /* =============================================
+           Side Badge (bottom-right)
+        ============================================= */
+        .side-badge {
+            position: absolute;
+            right: 48px;
+            bottom: 46px;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            opacity: 0;
+        }
+
+        .side-badge__text {
+            font-family: var(--font-sans);
+            font-size: 0.58rem;
+            font-weight: 300;
+            letter-spacing: 0.32em;
+            text-transform: uppercase;
+            color: var(--color-text-light);
+            writing-mode: vertical-rl;
+        }
+
+        .side-badge__line {
+            width: 1px;
+            height: 46px;
+            background: linear-gradient(to bottom, var(--color-primary-gold), transparent);
+        }
+
+        /* =============================================
+           Responsive
+        ============================================= */
+        @media (max-width: 1100px) {
+            .hero__image-col { width: 55%; }
+        }
+
+        @media (max-width: 900px) {
+            .nav { padding: 22px 36px; }
+            .hero__content { padding: 0 36px; }
+            .hero__image-col {
+                width: 100%;
+                opacity: 0.12 !important; /* persistent low opacity on mobile */
+            }
+            .scroll-hint { left: 36px; }
+        }
+
+        @media (max-width: 640px) {
+            .nav { padding: 20px 24px; }
+            .nav__menu { display: none; }
+            .hero__content { padding: 0 24px; }
+            .hero__title { font-size: clamp(2.6rem, 9vw, 3.4rem); }
+            .hero__cta { flex-direction: column; align-items: flex-start; gap: 28px; }
+            .scroll-hint { left: 24px; bottom: 32px; }
+            .side-badge { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ─── Custom Cursor ───────────────────────── -->
+    <div class="cursor"      id="cursor"></div>
+    <div class="cursor-ring" id="cursorRing"></div>
+
+    <!-- ─── Loader ─────────────────────────────── -->
+    <div class="loader" id="loader">
+        <div class="loader__wordmark" id="loaderWordmark">Atelier de Beleza</div>
+        <div class="loader__bar-wrap">
+            <div class="loader__bar" id="loaderBar"></div>
+        </div>
+    </div>
+
+    <!-- ─── Navigation ─────────────────────────── -->
+    <nav class="nav">
+        <a href="#" class="nav__logo" id="navLogo">
+            <span>A·</span>Esteticista
+        </a>
+        <ul class="nav__menu" id="navMenu">
+            <li><a href="#sobre">Sobre</a></li>
+            <li><a href="#tratamentos">Tratamentos</a></li>
+            <li><a href="#resultados">Resultados</a></li>
+            <li><a href="#contato">Contato</a></li>
+        </ul>
+    </nav>
+
+    <!-- ─── Hero ───────────────────────────────── -->
+    <section class="hero" id="hero">
+
+        <div class="hero__ambient"></div>
+
+        <!-- Right-side portrait (replace src with real photo) -->
+        <div class="hero__image-col" id="heroImageCol">
+            <div class="hero__image" id="heroImage" role="img" aria-label="Esteticista em atendimento"></div>
+            <!-- <img class="hero__image" src="assets/foto-esteticista.webp" alt="Esteticista em atendimento"> -->
+        </div>
+
+        <!-- Floating golden decoratives -->
+        <div class="hero__deco" aria-hidden="true">
+            <div class="deco-vline"   id="decoVline"></div>
+            <div class="deco-ring-lg" id="decoRingLg"></div>
+            <div class="deco-ring-sm" id="decoRingSm"></div>
+            <div class="deco-dot deco-dot--a" id="decoDotA"></div>
+            <div class="deco-dot deco-dot--b" id="decoDotB"></div>
+            <div class="deco-dot deco-dot--c" id="decoDotC"></div>
+            <div class="deco-hrule"   id="decoHrule"></div>
+        </div>
+
+        <!-- Main text content -->
+        <div class="hero__content">
+            <div class="hero__text">
+
+                <p class="hero__eyebrow" id="heroEyebrow">
+                    Esteticista &amp; Cosmetóloga
+                </p>
+
+                <h1 class="hero__title" aria-label="A Arte de Revelar a Sua Melhor Versão">
+                    <span class="title-line">
+                        <span class="title-line__inner" id="titleLine1">A Arte de</span>
+                    </span>
+                    <span class="title-line">
+                        <span class="title-line__inner" id="titleLine2">Revelar a <em>Sua</em></span>
+                    </span>
+                    <span class="title-line">
+                        <span class="title-line__inner" id="titleLine3">Melhor Versão.</span>
+                    </span>
+                </h1>
+
+                <p class="hero__subtitle" id="heroSubtitle">
+                    Protocolos personalizados com técnicas avançadas e ingredientes de alta performance,
+                    desenhados para revelar e realçar a beleza natural da sua pele.
+                </p>
+
+                <div class="hero__cta" id="heroCta">
+                    <a href="#contato" class="btn-gold">
+                        <span class="btn-gold__label">Agendar meu Momento</span>
+                        <span class="btn-gold__arrow" aria-hidden="true"></span>
+                    </a>
+                    <a href="#tratamentos" class="btn-ghost">
+                        Conhecer Tratamentos
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Scroll hint -->
+        <div class="scroll-hint" id="scrollHint" aria-hidden="true">
+            <div class="scroll-hint__track"></div>
+            <span class="scroll-hint__label">Scroll</span>
+        </div>
+
+        <!-- Side badge -->
+        <div class="side-badge" id="sideBadge" aria-hidden="true">
+            <span class="side-badge__text">Est. 2024</span>
+            <div class="side-badge__line"></div>
+        </div>
+
+    </section>
+
+
+    <!-- ─── Scripts ────────────────────────────── -->
+    <!-- GSAP core + ScrollTrigger -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <!-- Lenis smooth scroll -->
+    <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/bundled/lenis.min.js"></script>
+
+    <script>
+        /* ── Lenis ──────────────────────────────────── */
+        const lenis = new Lenis({
+            lerp:        0.08,
+            smoothWheel: true,
+            syncTouch:   false,
+        });
+
+        gsap.registerPlugin(ScrollTrigger);
+        gsap.ticker.add(t => lenis.raf(t * 1000));
+        gsap.ticker.lagSmoothing(0);
+
+        /* ── Custom Cursor ──────────────────────────── */
+        const cursor     = document.getElementById('cursor');
+        const cursorRing = document.getElementById('cursorRing');
+        let mx = 0, my = 0, rx = 0, ry = 0;
+
+        document.addEventListener('mousemove', e => {
+            mx = e.clientX;
+            my = e.clientY;
+            gsap.to(cursor, { x: mx, y: my, duration: 0.12, ease: 'power2.out' });
+        });
+
+        (function tickRing() {
+            rx += (mx - rx) * 0.11;
+            ry += (my - ry) * 0.11;
+            cursorRing.style.transform = `translate(calc(${rx}px - 50%), calc(${ry}px - 50%))`;
+            requestAnimationFrame(tickRing);
+        })();
+
+        document.querySelectorAll('a, button').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                gsap.to(cursorRing, { scale: 2,   opacity: 0.3,  duration: 0.35 });
+                gsap.to(cursor,     { scale: 0.4,               duration: 0.35 });
+            });
+            el.addEventListener('mouseleave', () => {
+                gsap.to(cursorRing, { scale: 1,   opacity: 0.55, duration: 0.35 });
+                gsap.to(cursor,     { scale: 1,                  duration: 0.35 });
+            });
+        });
+
+        /* ── Loader ─────────────────────────────────── */
+        gsap.timeline({
+            onComplete() {
+                document.getElementById('loader').style.pointerEvents = 'none';
+                startHero();
+            }
+        })
+        .to('#loaderWordmark', { opacity: 1, duration: 0.9, ease: 'power2.out' })
+        .to('#loaderBar',      { width: '100%', duration: 0.9, ease: 'power2.inOut' }, '-=0.4')
+        .to('#loader',         { yPercent: -100, duration: 1.05, ease: 'power4.inOut', delay: 0.45 });
+
+        /* ── Hero entrance ──────────────────────────── */
+        function startHero() {
+            const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
+
+            tl
+            /* Nav */
+            .to('#navLogo',  { opacity: 1, y: 0, duration: 1.0 },                    0.0)
+            .to('#navMenu',  { opacity: 1, y: 0, duration: 1.0 },                    0.1)
+
+            /* Photo column */
+            .to('#heroImageCol', { opacity: 1, duration: 2.0, ease: 'power2.out' },  0.2)
+
+            /* Eyebrow */
+            .to('#heroEyebrow',  { opacity: 1, y: 0, duration: 1.0 },                0.35)
+
+            /* Title lines — clip reveal */
+            .to(['#titleLine1','#titleLine2','#titleLine3'], {
+                y: '0%', duration: 1.5, stagger: 0.13, ease: 'power4.out'
+            }, 0.5)
+
+            /* Subtitle */
+            .to('#heroSubtitle', { opacity: 1, y: 0, duration: 1.1 },                0.9)
+
+            /* CTA */
+            .to('#heroCta',      { opacity: 1, y: 0, duration: 1.0 },                1.05)
+
+            /* Decoratives */
+            .to('#decoVline',    { opacity: 0.55, scaleY: 1, duration: 1.3 },        0.65)
+            .to(['#decoRingLg', '#decoRingSm'], {
+                opacity: 1, duration: 1.2, stagger: 0.2
+            }, 0.75)
+            .to(['#decoDotA','#decoDotB','#decoDotC'], {
+                opacity: 1, duration: 0.8, stagger: 0.1
+            }, 1.0)
+            .to('#decoHrule',    { opacity: 0.5, duration: 1.0 },                    0.9)
+
+            /* Scroll & badge */
+            .to('#scrollHint',   { opacity: 1, duration: 1.0 },                      1.3)
+            .to('#sideBadge',    { opacity: 1, duration: 1.0 },                      1.4);
+        }
+
+        /* ── Continuous float (breathing) ───────────── */
+        gsap.delayedCall(2.6, () => {
+            gsap.to('#decoVline', {
+                y: -20, duration: 3.8, ease: 'sine.inOut', yoyo: true, repeat: -1
+            });
+            gsap.to('#decoRingLg', {
+                y: -14, x: 7,  duration: 4.2, ease: 'sine.inOut', yoyo: true, repeat: -1
+            });
+            gsap.to('#decoRingSm', {
+                y: 11,  x: -6, duration: 3.4, ease: 'sine.inOut', yoyo: true, repeat: -1, delay: 1.0
+            });
+            gsap.to('#decoDotA', {
+                y: -9,  duration: 3.0, ease: 'sine.inOut', yoyo: true, repeat: -1
+            });
+            gsap.to('#decoDotB', {
+                y: -6,  duration: 3.3, ease: 'sine.inOut', yoyo: true, repeat: -1, delay: 0.5
+            });
+            gsap.to('#decoDotC', {
+                y: -11, duration: 3.6, ease: 'sine.inOut', yoyo: true, repeat: -1, delay: 0.9
+            });
+            gsap.to('#decoHrule', {
+                scaleX: 0.55, transformOrigin: 'left center',
+                duration: 3.2, ease: 'sine.inOut', yoyo: true, repeat: -1, delay: 0.6
+            });
+        });
+
+        /* ── Mouse-move parallax (subtle depth) ─────── */
+        document.addEventListener('mousemove', e => {
+            const xR = (e.clientX / window.innerWidth  - 0.5);
+            const yR = (e.clientY / window.innerHeight - 0.5);
+
+            gsap.to('#heroImageCol', {
+                x: xR * 22, y: yR * 10, duration: 1.6, ease: 'power2.out'
+            });
+            gsap.to('#decoRingLg', {
+                x: xR * -18, y: yR * -10, duration: 2.2, ease: 'power2.out', overwrite: 'auto'
+            });
+            gsap.to('#decoRingSm', {
+                x: xR *  14, y: yR *  12, duration: 2.2, ease: 'power2.out', overwrite: 'auto'
+            });
+        });
+    </script>
+
+</body>
+</html>
