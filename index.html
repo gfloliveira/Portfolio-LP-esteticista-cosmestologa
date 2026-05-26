@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atelier de Beleza — Esteticista & Cosmetóloga</title>
+    <title>Laís Nayélli — Esteticista & Cosmetóloga</title>
     <meta name="description" content="Protocolos personalizados com técnicas avançadas e ingredientes de alta performance para revelar a beleza natural da sua pele.">
+    <meta name="theme-color" content="#FAF9F6">
 
     <!-- LCP preload — hero image carrega com prioridade máxima -->
     <link rel="preload" as="image" href="assets/hero.jpg" fetchpriority="high">
@@ -808,19 +809,21 @@
         }
 
         /* Wrapper com overflow oculto para o reveal */
+        /* clip-path inicial evita FOUC antes do GSAP carregar */
         .about__img-wrap {
             position: relative;
             width: 100%;
             aspect-ratio: 4/5;
             overflow: hidden;
             border-radius: 3px;
+            clip-path: inset(0 100% 0 0 round 3px);
         }
 
         .about__img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            object-position: center 18%;
+            object-position: center 12%;
             display: block;
             will-change: transform;
             transform-origin: center center;
@@ -993,6 +996,9 @@
                 margin: 0 auto;
             }
 
+            /* Parallax desativado no mobile — libera GPU */
+            .about__img { will-change: auto; }
+
             .about__media-label {
                 max-width: 78%;
                 margin: 16px auto 0;
@@ -1158,11 +1164,11 @@
                         <img
                             class="about__img"
                             id="aboutImg"
-                            src="assets/hero.jpg"
-                            alt="Laís Nayélli — Esteticista e Cosmetóloga"
+                            src="assets/photo-portrait.jpg"
+                            alt="Laís Nayélli sorrindo — Esteticista e Cosmetóloga"
                             loading="lazy"
-                            width="893"
-                            height="1191"
+                            width="930"
+                            height="1240"
                         >
                     </div>
                 </div>
@@ -1253,6 +1259,8 @@
                 const lenis = new Lenis({ lerp: 0.08, smoothWheel: true });
                 gsap.ticker.add(t => lenis.raf(t * 1000));
                 gsap.ticker.lagSmoothing(0);
+                /* Sincroniza ScrollTrigger com o scroll suavizado do Lenis */
+                lenis.on('scroll', ScrollTrigger.update);
             } catch (e) {
                 console.warn('[Lenis] scroll nativo ativo.', e);
             }
@@ -1443,16 +1451,25 @@
            Sessão 02 — Sobre: ScrollTrigger animations
         ══════════════════════════════════════════ */
 
-        /* Estados iniciais da seção */
-        gsap.set('.about-tl__i', { y: '106%' });
-        gsap.set(['#aboutImgWrap'],                    { clipPath: 'inset(0 100% 0 0)' });
-        gsap.set(['#frameTR', '#frameBL'],             { opacity: 0, scale: 0.6 });
-        gsap.set('#aboutMediaLabel',                   { opacity: 0, x: -14 });
-        gsap.set('#aboutEyebrow',                      { opacity: 0, y: 14 });
-        gsap.set('#aboutDivider',                      { scaleX: 0 });
-        gsap.set('#aboutQuote',                        { opacity: 0, y: 20 });
-        gsap.set('#aboutPara1, #aboutPara2',           { opacity: 0, y: 18 });
-        gsap.set('.about-stat, .about-stat__sep',      { opacity: 0, y: 22 });
+        /* Estados iniciais — só quando animações estão habilitadas */
+        if (!reducedMo) {
+            gsap.set('.about-tl__i',                       { y: '106%' });
+            gsap.set('#aboutImgWrap',                      { clipPath: 'inset(0 100% 0 0 round 3px)' });
+            gsap.set(['#frameTR', '#frameBL'],             { opacity: 0, scale: 0.6 });
+            gsap.set('#aboutMediaLabel',                   { opacity: 0, x: -14 });
+            gsap.set('#aboutEyebrow',                      { opacity: 0, y: 14 });
+            gsap.set('#aboutDivider',                      { scaleX: 0 });
+            gsap.set('#aboutQuote',                        { opacity: 0, y: 20 });
+            gsap.set('#aboutPara1, #aboutPara2',           { opacity: 0, y: 18 });
+            gsap.set('.about-stat, .about-stat__sep',      { opacity: 0, y: 22 });
+        } else {
+            /* reducedMo: mostra stats com valores corretos imediatamente */
+            document.querySelectorAll('.about-stat__number').forEach(el => {
+                el.textContent = el.dataset.target + (el.dataset.suffix || '');
+            });
+            /* Revela a imagem (remove clip-path do CSS) */
+            document.getElementById('aboutImgWrap').style.clipPath = 'none';
+        }
 
         /* Timeline principal — dispara quando a seção entra na viewport */
         gsap.timeline({
@@ -1462,9 +1479,9 @@
                 once: true
             }
         })
-        /* 1. Reveal da foto: máscara desliza da direita */
+        /* 1. Reveal da foto: máscara desliza da direita, round preserva border-radius */
         .to('#aboutImgWrap', {
-            clipPath: 'inset(0 0% 0 0)', duration: 1.5, ease: 'power4.inOut'
+            clipPath: 'inset(0 0% 0 0 round 3px)', duration: 1.5, ease: 'power4.inOut'
         })
         /* 2. Cantos dourados surgem com mola */
         .to('#frameTR', { opacity: 1, scale: 1, duration: 0.8, ease: 'back.out(1.6)' }, '-=0.9')
