@@ -4,27 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Atelier de Beleza — Esteticista & Cosmetóloga</title>
-    <meta name="description" content="Protocolos personalizados com técnicas avançadas para revelar a beleza natural da sua pele.">
+    <meta name="description" content="Protocolos personalizados com técnicas avançadas e ingredientes de alta performance para revelar a beleza natural da sua pele.">
+
+    <!-- LCP preload — hero image carrega com prioridade máxima -->
+    <link rel="preload" as="image" href="assets/hero.jpg" fetchpriority="high">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 
     <style>
         /* =============================================
            Design System — CSS Custom Properties
         ============================================= */
         :root {
-            --color-bg:            #FAF9F6;
-            --color-bg-warm:       #FDFBF7;
-            --color-primary-gold:  #C5A059;
-            --color-gold-light:    #E6C280;
-            --color-gold-dark:     #A8854A;
-            --color-accent:        #D4AF37;
-            --color-text-dark:     #1C1A17;
-            --color-text-muted:    #7A7568;
-            --color-text-light:    #B0A898;
+            --color-bg:           #FAF9F6;
+            --color-primary-gold: #C5A059;
+            --color-gold-light:   #E6C280;
+            --color-gold-dark:    #A8854A;
+            --color-accent:       #D4AF37;
+            --color-text-dark:    #1C1A17;
+            --color-text-muted:   #7A7568;
+            --color-text-light:   #B0A898;
 
             --font-serif: 'Cormorant Garamond', Georgia, serif;
             --font-sans:  'Jost', sans-serif;
@@ -42,9 +44,7 @@
             box-sizing: border-box;
         }
 
-        html {
-            font-size: 16px;
-        }
+        html { font-size: 16px; }
 
         body {
             background-color: var(--color-bg);
@@ -52,39 +52,45 @@
             font-family: var(--font-sans);
             font-weight: 300;
             overflow-x: hidden;
-            cursor: none;
+        }
+
+        /* Cursor: none only para dispositivos com mouse real */
+        @media (hover: hover) and (pointer: fine) {
+            body, a, button { cursor: none; }
         }
 
         /* =============================================
-           Custom Cursor
+           Custom Cursor — desktop only
         ============================================= */
-        .cursor {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 7px;
-            height: 7px;
-            background: var(--color-primary-gold);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9999;
-            transform: translate(-50%, -50%);
-            will-change: transform;
-        }
+        .cursor,
+        .cursor-ring { display: none; }
 
-        .cursor-ring {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 34px;
-            height: 34px;
-            border: 1px solid rgba(197, 160, 89, 0.55);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9998;
-            transform: translate(-50%, -50%);
-            will-change: transform;
-            transition: opacity 0.3s ease;
+        @media (hover: hover) and (pointer: fine) {
+            .cursor {
+                display: block;
+                position: fixed;
+                top: 0; left: 0;
+                width: 7px; height: 7px;
+                background: var(--color-primary-gold);
+                border-radius: 50%;
+                pointer-events: none;
+                z-index: 9999;
+                transform: translate(-50%, -50%);
+                will-change: transform;
+            }
+
+            .cursor-ring {
+                display: block;
+                position: fixed;
+                top: 0; left: 0;
+                width: 34px; height: 34px;
+                border: 1px solid rgba(197, 160, 89, 0.55);
+                border-radius: 50%;
+                pointer-events: none;
+                z-index: 9998;
+                transform: translate(-50%, -50%);
+                will-change: transform;
+            }
         }
 
         /* =============================================
@@ -104,19 +110,19 @@
 
         .loader__wordmark {
             font-family: var(--font-serif);
-            font-size: 1.25rem;
+            font-size: 1.2rem;
             font-weight: 300;
             letter-spacing: 0.45em;
             text-transform: uppercase;
             color: var(--color-text-dark);
-            opacity: 0;
+            opacity: 0; /* animado por GSAP */
         }
 
         .loader__bar-wrap {
             width: 160px;
             height: 1px;
-            overflow: hidden;
             background: rgba(197, 160, 89, 0.15);
+            overflow: hidden;
         }
 
         .loader__bar {
@@ -130,14 +136,23 @@
         ============================================= */
         .nav {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
+            top: 0; left: 0; right: 0;
             z-index: 200;
-            padding: 30px 60px;
+            padding: 28px 60px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            transition: padding 0.4s var(--ease-smooth),
+                        background 0.4s ease,
+                        backdrop-filter 0.4s ease;
+        }
+
+        /* Frosted glass ao rolar */
+        .nav.is-scrolled {
+            padding: 16px 60px;
+            background: rgba(250, 249, 246, 0.88);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
         }
 
         .nav__logo {
@@ -148,18 +163,14 @@
             text-transform: uppercase;
             color: var(--color-text-dark);
             text-decoration: none;
-            opacity: 0;
         }
 
-        .nav__logo span {
-            color: var(--color-primary-gold);
-        }
+        .nav__logo span { color: var(--color-primary-gold); }
 
         .nav__menu {
             list-style: none;
             display: flex;
             gap: 48px;
-            opacity: 0;
         }
 
         .nav__menu a {
@@ -173,8 +184,69 @@
             transition: color 0.3s ease;
         }
 
-        .nav__menu a:hover {
-            color: var(--color-primary-gold);
+        .nav__menu a:hover { color: var(--color-primary-gold); }
+
+        /* ── Hamburger (mobile) ── */
+        .nav__burger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            background: none;
+            border: none;
+            padding: 10px;
+            margin: -10px;
+        }
+
+        .nav__burger span {
+            display: block;
+            width: 22px;
+            height: 1px;
+            background: var(--color-text-dark);
+            transition: transform 0.4s var(--ease-elegant), opacity 0.3s ease;
+            transform-origin: center;
+        }
+
+        .nav__burger.is-open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+        .nav__burger.is-open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+        .nav__burger.is-open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+        /* ── Mobile Menu Overlay ── */
+        .mobile-menu {
+            position: fixed;
+            inset: 0;
+            background: var(--color-bg);
+            z-index: 190;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 36px;
+            transform: translateY(-100%);
+            transition: transform 0.65s var(--ease-elegant);
+            pointer-events: none;
+        }
+
+        .mobile-menu.is-open {
+            transform: translateY(0);
+            pointer-events: all;
+        }
+
+        .mobile-menu a {
+            font-family: var(--font-serif);
+            font-size: 2.4rem;
+            font-weight: 300;
+            letter-spacing: 0.04em;
+            color: var(--color-text-dark);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .mobile-menu a:hover { color: var(--color-primary-gold); }
+
+        .mobile-menu__rule {
+            width: 36px;
+            height: 1px;
+            background: rgba(197, 160, 89, 0.3);
         }
 
         /* =============================================
@@ -184,65 +256,61 @@
             position: relative;
             width: 100%;
             height: 100vh;
-            min-height: 680px;
+            height: 100svh; /* evita o endereço mobile ficar dentro do hero */
+            min-height: 640px;
             display: flex;
             align-items: center;
             overflow: hidden;
             background: var(--color-bg);
         }
 
-        /* Ambient gradient background */
+        /* Gradiente ambiente dourado */
         .hero__ambient {
             position: absolute;
             inset: 0;
+            z-index: 0;
             background:
-                radial-gradient(ellipse 70% 60% at 75% 35%, rgba(197, 160, 89, 0.08) 0%, transparent 100%),
-                radial-gradient(ellipse 50% 50% at 15% 75%, rgba(197, 160, 89, 0.05) 0%, transparent 100%),
-                linear-gradient(160deg, #FDFCF9 0%, #FAF8F3 50%, #F6F2EB 100%);
+                radial-gradient(ellipse 70% 60% at 80% 30%, rgba(197, 160, 89, 0.07) 0%, transparent 100%),
+                radial-gradient(ellipse 50% 50% at 10% 82%, rgba(197, 160, 89, 0.04) 0%, transparent 100%),
+                linear-gradient(160deg, #FDFCF9 0%, #FAF8F3 55%, #F6F2EB 100%);
         }
 
-        /* Right-side image column */
+        /* ── Coluna da foto (desktop: lado direito) ── */
         .hero__image-col {
             position: absolute;
             right: 0;
             top: 0;
             bottom: 0;
-            width: 46%;
+            width: 48%;
             overflow: hidden;
-            opacity: 0;
+            will-change: transform;
         }
 
+        /* Véu: funde a borda esquerda da foto no fundo off-white */
         .hero__image-col::after {
             content: '';
             position: absolute;
             inset: 0;
-            /* Veil: fades left edge into the background */
+            z-index: 2;
+            pointer-events: none;
             background: linear-gradient(
                 to right,
                 var(--color-bg) 0%,
-                rgba(250, 249, 246, 0.6) 30%,
-                rgba(250, 249, 246, 0.15) 100%
+                rgba(250, 249, 246, 0.70) 28%,
+                rgba(250, 249, 246, 0.20) 55%,
+                transparent 100%
             );
-            z-index: 2;
         }
 
         .hero__image {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            object-position: center top;
-            /*
-             * ── SUBSTITUIR ──────────────────────────────────────────
-             * Troque o src abaixo pela foto real da profissional.
-             * Dimensões ideais: 900×1200 px, formato .webp ou .jpg.
-             * ────────────────────────────────────────────────────────
-             */
-            background:
-                radial-gradient(ellipse 80% 80% at 50% 40%, rgba(230, 194, 128, 0.18) 0%, transparent 70%),
-                linear-gradient(155deg, #EFE8DC 0%, #E3D6C5 35%, #D8CABC 65%, #CCBCAA 100%);
+            object-position: 38% top; /* foca rosto e busto */
+            display: block;
         }
 
-        /* Main content wrapper */
+        /* ── Conteúdo principal ── */
         .hero__content {
             position: relative;
             z-index: 10;
@@ -252,11 +320,9 @@
             padding: 0 60px;
         }
 
-        .hero__text {
-            max-width: 600px;
-        }
+        .hero__text { max-width: 580px; }
 
-        /* Eyebrow label */
+        /* Eyebrow */
         .hero__eyebrow {
             display: flex;
             align-items: center;
@@ -267,8 +333,7 @@
             letter-spacing: 0.38em;
             text-transform: uppercase;
             color: var(--color-primary-gold);
-            margin-bottom: 30px;
-            opacity: 0;
+            margin-bottom: 28px;
         }
 
         .hero__eyebrow::before {
@@ -279,28 +344,25 @@
             background: var(--color-primary-gold);
         }
 
-        /* Main title */
+        /* Título */
         .hero__title {
             font-family: var(--font-serif);
             font-weight: 300;
-            font-size: clamp(3rem, 5.2vw, 5.8rem);
-            line-height: 1.06;
+            font-size: clamp(3rem, 5vw, 5.8rem);
+            line-height: 1.08;
             letter-spacing: -0.01em;
             color: var(--color-text-dark);
-            margin-bottom: 36px;
+            margin-bottom: 32px;
         }
 
-        /* Each line is clipped — inner span slides up on entrance */
+        /* Clip reveal — inner span gerenciado exclusivamente via GSAP */
         .title-line {
             display: block;
             overflow: hidden;
-            padding-bottom: 0.06em; /* avoids descender clip */
+            padding-bottom: 0.08em;
         }
 
-        .title-line__inner {
-            display: block;
-            transform: translateY(105%);
-        }
+        .title-line__inner { display: block; }
 
         .hero__title em {
             font-style: italic;
@@ -308,33 +370,33 @@
             font-weight: 300;
         }
 
-        /* Subtitle */
+        /* Subtítulo */
         .hero__subtitle {
             font-family: var(--font-sans);
-            font-size: 0.93rem;
+            font-size: 0.92rem;
             font-weight: 300;
             line-height: 1.9;
             color: var(--color-text-muted);
-            max-width: 400px;
-            margin-bottom: 56px;
-            opacity: 0;
+            max-width: 390px;
+            margin-bottom: 52px;
         }
 
-        /* CTA group */
+        /* CTA */
         .hero__cta {
             display: flex;
             align-items: center;
             gap: 44px;
-            opacity: 0;
+            flex-wrap: wrap;
         }
 
-        /* Primary button */
+        /* Botão primário */
         .btn-gold {
             position: relative;
             display: inline-flex;
             align-items: center;
             gap: 16px;
-            padding: 17px 38px;
+            padding: 16px 36px;
+            min-height: 52px; /* área de toque adequada */
             border: 1px solid var(--color-primary-gold);
             border-radius: 2px;
             background: transparent;
@@ -345,9 +407,9 @@
             text-transform: uppercase;
             color: var(--color-text-dark);
             text-decoration: none;
-            cursor: none;
             overflow: hidden;
             transition: color 0.45s var(--ease-elegant);
+            -webkit-tap-highlight-color: transparent;
         }
 
         .btn-gold::before {
@@ -359,19 +421,20 @@
             transition: transform 0.5s var(--ease-elegant);
         }
 
-        .btn-gold:hover::before {
-            transform: translateY(0);
+        /* Hover fill — só em dispositivos com mouse */
+        @media (hover: hover) {
+            .btn-gold:hover::before { transform: translateY(0); }
+            .btn-gold:hover { color: var(--color-bg); }
+            .btn-gold:hover .btn-gold__arrow { width: 26px; }
         }
 
-        .btn-gold:hover {
-            color: #FAF9F6;
+        /* Tap feedback em touch */
+        @media (hover: none) {
+            .btn-gold:active { background: var(--color-primary-gold); color: var(--color-bg); }
         }
 
         .btn-gold__label,
-        .btn-gold__arrow {
-            position: relative;
-            z-index: 1;
-        }
+        .btn-gold__arrow { position: relative; z-index: 1; }
 
         .btn-gold__arrow {
             display: block;
@@ -381,11 +444,7 @@
             transition: width 0.35s ease;
         }
 
-        .btn-gold:hover .btn-gold__arrow {
-            width: 26px;
-        }
-
-        /* Ghost link */
+        /* Botão ghost */
         .btn-ghost {
             font-family: var(--font-sans);
             font-size: 0.68rem;
@@ -397,7 +456,9 @@
             display: inline-flex;
             align-items: center;
             gap: 12px;
+            min-height: 44px;
             transition: color 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .btn-ghost::after {
@@ -409,16 +470,13 @@
             transition: width 0.35s ease;
         }
 
-        .btn-ghost:hover {
-            color: var(--color-primary-gold);
-        }
-
-        .btn-ghost:hover::after {
-            width: 38px;
+        @media (hover: hover) {
+            .btn-ghost:hover { color: var(--color-primary-gold); }
+            .btn-ghost:hover::after { width: 38px; }
         }
 
         /* =============================================
-           Floating Decorative Elements
+           Elementos Decorativos Dourados
         ============================================= */
         .hero__deco {
             position: absolute;
@@ -428,64 +486,52 @@
             overflow: hidden;
         }
 
-        /* Vertical hair-line */
         .deco-vline {
             position: absolute;
-            top: 14%;
-            right: 43%;
+            top: 12%;
+            right: 44%;
             width: 1px;
-            height: 170px;
+            height: 160px;
             background: linear-gradient(to bottom, transparent, var(--color-primary-gold) 50%, transparent);
-            opacity: 0;
-            transform: scaleY(0);
-            transform-origin: top center;
         }
 
-        /* Large ring — top-left */
         .deco-ring-lg {
             position: absolute;
-            top: 6%;
-            left: 4%;
-            width: 130px;
-            height: 130px;
+            top: 7%;
+            left: 3.5%;
+            width: 120px;
+            height: 120px;
             border-radius: 50%;
-            border: 1px solid rgba(197, 160, 89, 0.22);
-            opacity: 0;
+            border: 1px solid rgba(197, 160, 89, 0.2);
         }
 
-        /* Small ring — mid */
         .deco-ring-sm {
             position: absolute;
-            bottom: 18%;
+            bottom: 20%;
             right: 47%;
-            width: 52px;
-            height: 52px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
-            border: 1px solid rgba(197, 160, 89, 0.3);
-            opacity: 0;
+            border: 1px solid rgba(197, 160, 89, 0.28);
         }
 
-        /* Particle cluster */
         .deco-dot {
             position: absolute;
             border-radius: 50%;
             background: var(--color-primary-gold);
-            opacity: 0;
         }
 
-        .deco-dot--a { width: 4px; height: 4px; top: 29%; left: 51%; }
-        .deco-dot--b { width: 2px; height: 2px; top: 31%; left: 53%; }
-        .deco-dot--c { width: 3px; height: 3px; top: 27%; left: 50%; }
+        .deco-dot--a { width: 4px; height: 4px; top: 29%; left: 50%; }
+        .deco-dot--b { width: 2px; height: 2px; top: 31%; left: 52%; }
+        .deco-dot--c { width: 3px; height: 3px; top: 27%; left: 49%; }
 
-        /* Horizontal thin rule */
         .deco-hrule {
             position: absolute;
-            bottom: 21%;
-            left: 52%;
-            width: 90px;
+            bottom: 22%;
+            left: 51%;
+            width: 85px;
             height: 1px;
             background: linear-gradient(to right, var(--color-primary-gold), transparent);
-            opacity: 0;
         }
 
         /* =============================================
@@ -493,19 +539,18 @@
         ============================================= */
         .scroll-hint {
             position: absolute;
-            bottom: 46px;
+            bottom: 44px;
             left: 60px;
             z-index: 10;
             display: flex;
             align-items: flex-end;
             gap: 14px;
-            opacity: 0;
         }
 
         .scroll-hint__track {
             width: 1px;
-            height: 58px;
-            background: rgba(197, 160, 89, 0.25);
+            height: 56px;
+            background: rgba(197, 160, 89, 0.2);
             position: relative;
             overflow: hidden;
         }
@@ -513,7 +558,7 @@
         .scroll-hint__track::after {
             content: '';
             position: absolute;
-            top: -100%;
+            top: -60%;
             left: 0;
             width: 100%;
             height: 60%;
@@ -530,7 +575,7 @@
 
         .scroll-hint__label {
             font-family: var(--font-sans);
-            font-size: 0.58rem;
+            font-size: 0.57rem;
             font-weight: 400;
             letter-spacing: 0.32em;
             text-transform: uppercase;
@@ -540,22 +585,21 @@
         }
 
         /* =============================================
-           Side Badge (bottom-right)
+           Side Badge
         ============================================= */
         .side-badge {
             position: absolute;
             right: 48px;
-            bottom: 46px;
+            bottom: 44px;
             z-index: 10;
             display: flex;
             align-items: center;
             gap: 14px;
-            opacity: 0;
         }
 
         .side-badge__text {
             font-family: var(--font-sans);
-            font-size: 0.58rem;
+            font-size: 0.57rem;
             font-weight: 300;
             letter-spacing: 0.32em;
             text-transform: uppercase;
@@ -565,45 +609,126 @@
 
         .side-badge__line {
             width: 1px;
-            height: 46px;
+            height: 44px;
             background: linear-gradient(to bottom, var(--color-primary-gold), transparent);
         }
 
         /* =============================================
-           Responsive
+           Reduced Motion — acessibilidade
+        ============================================= */
+        @media (prefers-reduced-motion: reduce) {
+            .scroll-hint__track::after { animation: none; opacity: 0.5; top: 20%; }
+            .mobile-menu  { transition: none; }
+            .nav          { transition: none; }
+            .btn-gold::before { transition: none; }
+        }
+
+        /* =============================================
+           Tablet — ≤1100px
         ============================================= */
         @media (max-width: 1100px) {
-            .hero__image-col { width: 55%; }
+            .nav { padding: 26px 44px; }
+            .nav.is-scrolled { padding: 15px 44px; }
+            .hero__content { padding: 0 44px; }
+            .hero__image-col { width: 52%; }
+            .scroll-hint { left: 44px; }
+            .side-badge  { right: 36px; }
         }
 
-        @media (max-width: 900px) {
-            .nav { padding: 22px 36px; }
-            .hero__content { padding: 0 36px; }
+        /* =============================================
+           Mobile — ≤768px
+           Layout cinematográfico: foto full-screen
+           com gradiente de baixo para cima
+        ============================================= */
+        @media (max-width: 768px) {
+            /* Nav */
+            .nav { padding: 20px 24px; }
+            .nav.is-scrolled { padding: 13px 24px; }
+            .nav__menu   { display: none; }
+            .nav__burger { display: flex; }
+
+            /* Hero: conteúdo na parte de baixo */
+            .hero {
+                align-items: flex-end;
+                padding-bottom: 72px;
+            }
+
+            /* Foto ocupa a tela inteira */
             .hero__image-col {
                 width: 100%;
-                opacity: 0.12 !important; /* persistent low opacity on mobile */
+                right: 0; left: 0;
             }
-            .scroll-hint { left: 36px; }
+
+            /* Véu invertido: funde de baixo (branco) para cima (foto aparece) */
+            .hero__image-col::after {
+                background: linear-gradient(
+                    to top,
+                    var(--color-bg)                   0%,
+                    rgba(250, 249, 246, 0.97)         32%,
+                    rgba(250, 249, 246, 0.82)         52%,
+                    rgba(250, 249, 246, 0.40)         72%,
+                    rgba(250, 249, 246, 0.05)        100%
+                );
+            }
+
+            /* Foto: foca o rosto na parte superior da tela */
+            .hero__image { object-position: center 10%; }
+
+            /* Conteúdo */
+            .hero__content { padding: 0 24px; }
+            .hero__text    { max-width: 100%; }
+
+            .hero__subtitle {
+                max-width: 100%;
+                font-size: 0.94rem;
+                margin-bottom: 40px;
+            }
+
+            .hero__cta { gap: 20px; }
+
+            /* Decorativos: escondem no mobile (ruído visual) */
+            .hero__deco { display: none; }
+
+            /* Scroll indicator */
+            .scroll-hint { bottom: 20px; left: 24px; }
+            .side-badge  { display: none; }
         }
 
-        @media (max-width: 640px) {
-            .nav { padding: 20px 24px; }
-            .nav__menu { display: none; }
-            .hero__content { padding: 0 24px; }
-            .hero__title { font-size: clamp(2.6rem, 9vw, 3.4rem); }
-            .hero__cta { flex-direction: column; align-items: flex-start; gap: 28px; }
-            .scroll-hint { left: 24px; bottom: 32px; }
-            .side-badge { display: none; }
+        /* =============================================
+           Mobile pequeno — ≤480px
+        ============================================= */
+        @media (max-width: 480px) {
+            .hero { padding-bottom: 60px; }
+
+            .hero__title {
+                font-size: clamp(2.4rem, 9.5vw, 3.2rem);
+            }
+
+            .hero__eyebrow { margin-bottom: 18px; }
+
+            .hero__subtitle {
+                font-size: 0.88rem;
+                line-height: 1.8;
+                margin-bottom: 32px;
+            }
+
+            .hero__cta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+
+            .scroll-hint { display: none; }
         }
     </style>
 </head>
 <body>
 
-    <!-- ─── Custom Cursor ───────────────────────── -->
+    <!-- ── Custom Cursor (desktop) ──────────────── -->
     <div class="cursor"      id="cursor"></div>
     <div class="cursor-ring" id="cursorRing"></div>
 
-    <!-- ─── Loader ─────────────────────────────── -->
+    <!-- ── Loader ───────────────────────────────── -->
     <div class="loader" id="loader">
         <div class="loader__wordmark" id="loaderWordmark">Atelier de Beleza</div>
         <div class="loader__bar-wrap">
@@ -611,8 +736,19 @@
         </div>
     </div>
 
-    <!-- ─── Navigation ─────────────────────────── -->
-    <nav class="nav">
+    <!-- ── Mobile Menu Overlay ──────────────────── -->
+    <div class="mobile-menu" id="mobileMenu" role="dialog" aria-modal="true" aria-label="Menu de navegação">
+        <a href="#sobre">Sobre</a>
+        <div class="mobile-menu__rule"></div>
+        <a href="#tratamentos">Tratamentos</a>
+        <div class="mobile-menu__rule"></div>
+        <a href="#resultados">Resultados</a>
+        <div class="mobile-menu__rule"></div>
+        <a href="#contato">Contato</a>
+    </div>
+
+    <!-- ── Navigation ───────────────────────────── -->
+    <nav class="nav" id="nav">
         <a href="#" class="nav__logo" id="navLogo">
             <span>A·</span>Esteticista
         </a>
@@ -622,31 +758,44 @@
             <li><a href="#resultados">Resultados</a></li>
             <li><a href="#contato">Contato</a></li>
         </ul>
+        <button class="nav__burger" id="navBurger"
+                aria-label="Abrir menu" aria-expanded="false" aria-controls="mobileMenu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
     </nav>
 
-    <!-- ─── Hero ───────────────────────────────── -->
+    <!-- ── Hero ─────────────────────────────────── -->
     <section class="hero" id="hero">
 
         <div class="hero__ambient"></div>
 
-        <!-- Right-side portrait (replace src with real photo) -->
+        <!-- Foto real da profissional -->
         <div class="hero__image-col" id="heroImageCol">
-            <div class="hero__image" id="heroImage" role="img" aria-label="Esteticista em atendimento"></div>
-            <!-- <img class="hero__image" src="assets/foto-esteticista.webp" alt="Esteticista em atendimento"> -->
+            <img
+                class="hero__image"
+                src="assets/hero.jpg"
+                alt="Esteticista e Cosmetóloga sorrindo em seu espaço de atendimento com espelho hollywoodiano"
+                loading="eager"
+                fetchpriority="high"
+                width="893"
+                height="1191"
+            >
         </div>
 
-        <!-- Floating golden decoratives -->
+        <!-- Decorativos dourados flutuantes (visíveis só no desktop) -->
         <div class="hero__deco" aria-hidden="true">
-            <div class="deco-vline"   id="decoVline"></div>
-            <div class="deco-ring-lg" id="decoRingLg"></div>
-            <div class="deco-ring-sm" id="decoRingSm"></div>
-            <div class="deco-dot deco-dot--a" id="decoDotA"></div>
-            <div class="deco-dot deco-dot--b" id="decoDotB"></div>
-            <div class="deco-dot deco-dot--c" id="decoDotC"></div>
-            <div class="deco-hrule"   id="decoHrule"></div>
+            <div class="deco-vline"              id="decoVline"></div>
+            <div class="deco-ring-lg"            id="decoRingLg"></div>
+            <div class="deco-ring-sm"            id="decoRingSm"></div>
+            <div class="deco-dot deco-dot--a"   id="decoDotA"></div>
+            <div class="deco-dot deco-dot--b"   id="decoDotB"></div>
+            <div class="deco-dot deco-dot--c"   id="decoDotC"></div>
+            <div class="deco-hrule"              id="decoHrule"></div>
         </div>
 
-        <!-- Main text content -->
+        <!-- Conteúdo textual -->
         <div class="hero__content">
             <div class="hero__text">
 
@@ -656,19 +805,20 @@
 
                 <h1 class="hero__title" aria-label="A Arte de Revelar a Sua Melhor Versão">
                     <span class="title-line">
-                        <span class="title-line__inner" id="titleLine1">A Arte de</span>
+                        <span class="title-line__inner" id="tl1">A Arte de</span>
                     </span>
                     <span class="title-line">
-                        <span class="title-line__inner" id="titleLine2">Revelar a <em>Sua</em></span>
+                        <span class="title-line__inner" id="tl2">Revelar a <em>Sua</em></span>
                     </span>
                     <span class="title-line">
-                        <span class="title-line__inner" id="titleLine3">Melhor Versão.</span>
+                        <span class="title-line__inner" id="tl3">Melhor Versão.</span>
                     </span>
                 </h1>
 
                 <p class="hero__subtitle" id="heroSubtitle">
-                    Protocolos personalizados com técnicas avançadas e ingredientes de alta performance,
-                    desenhados para revelar e realçar a beleza natural da sua pele.
+                    Protocolos personalizados com técnicas avançadas e ingredientes
+                    de alta performance, desenhados para revelar e realçar a beleza
+                    natural da sua pele.
                 </p>
 
                 <div class="hero__cta" id="heroCta">
@@ -684,13 +834,13 @@
             </div>
         </div>
 
-        <!-- Scroll hint -->
+        <!-- Indicador de scroll -->
         <div class="scroll-hint" id="scrollHint" aria-hidden="true">
             <div class="scroll-hint__track"></div>
             <span class="scroll-hint__label">Scroll</span>
         </div>
 
-        <!-- Side badge -->
+        <!-- Badge lateral -->
         <div class="side-badge" id="sideBadge" aria-hidden="true">
             <span class="side-badge__text">Est. 2024</span>
             <div class="side-badge__line"></div>
@@ -699,67 +849,105 @@
     </section>
 
 
-    <!-- ─── Scripts ────────────────────────────── -->
-    <!-- GSAP core + ScrollTrigger -->
+    <!-- ── Scripts ──────────────────────────────── -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-    <!-- Lenis smooth scroll (pacote atualizado, path correto do npm) -->
     <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
 
     <script>
         gsap.registerPlugin(ScrollTrigger);
 
-        /* ── Estados iniciais via GSAP (evita conflito com CSS transform) ── */
-        gsap.set('#navLogo',      { opacity: 0, y: -10 });
-        gsap.set('#navMenu',      { opacity: 0, y: -10 });
-        gsap.set('#heroEyebrow',  { opacity: 0, y: 16  });
-        gsap.set('#heroSubtitle', { opacity: 0, y: 18  });
-        gsap.set('#heroCta',      { opacity: 0, y: 18  });
-        gsap.set('#heroImageCol', { opacity: 0 });
-        gsap.set('#scrollHint',   { opacity: 0 });
-        gsap.set('#sideBadge',    { opacity: 0 });
-        gsap.set('#decoVline',    { opacity: 0, scaleY: 0 });
-        gsap.set(['#decoRingLg','#decoRingSm','#decoDotA','#decoDotB','#decoDotC','#decoHrule'], { opacity: 0 });
+        /* ── Detecção de ambiente ──────────────────── */
+        const isTouch   = window.matchMedia('(hover: none)').matches;
+        const isMobile  = window.matchMedia('(max-width: 768px)').matches;
+        const reducedMo = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-        /* ── Lenis (com fallback seguro caso CDN falhe) ─────────────────── */
-        try {
-            const lenis = new Lenis({ lerp: 0.08, smoothWheel: true, syncTouch: false });
-            gsap.ticker.add(t => lenis.raf(t * 1000));
-            gsap.ticker.lagSmoothing(0);
-        } catch (e) {
-            console.warn('[Lenis] Não inicializou, usando scroll nativo.', e);
+        /* ── Estados GSAP iniciais ─────────────────── */
+        /* Controlamos tudo via GSAP — sem conflito com CSS transform */
+        gsap.set('#navLogo, #navMenu, #navBurger', { opacity: 0, y: -10 });
+        gsap.set('#heroEyebrow, #heroSubtitle, #heroCta', { opacity: 0, y: 16 });
+        gsap.set('#heroImageCol, #scrollHint, #sideBadge', { opacity: 0 });
+        gsap.set('.title-line__inner', { y: '106%' }); /* clip reveal inicial */
+
+        if (!isMobile) {
+            gsap.set('#decoVline',  { opacity: 0, scaleY: 0 });
+            gsap.set('#decoRingLg, #decoRingSm, #decoDotA, #decoDotB, #decoDotC, #decoHrule',
+                     { opacity: 0 });
         }
 
-        /* ── Custom Cursor ──────────────────────────── */
-        const cursor     = document.getElementById('cursor');
-        const cursorRing = document.getElementById('cursorRing');
-        let mx = 0, my = 0, rx = 0, ry = 0;
+        /* ── Lenis smooth scroll (só no desktop) ───── */
+        if (!isTouch) {
+            try {
+                const lenis = new Lenis({ lerp: 0.08, smoothWheel: true });
+                gsap.ticker.add(t => lenis.raf(t * 1000));
+                gsap.ticker.lagSmoothing(0);
+            } catch (e) {
+                console.warn('[Lenis] scroll nativo ativo.', e);
+            }
+        }
 
-        document.addEventListener('mousemove', e => {
-            mx = e.clientX;
-            my = e.clientY;
-            gsap.to(cursor, { x: mx, y: my, duration: 0.12, ease: 'power2.out' });
+        /* ── Custom Cursor (desktop) ───────────────── */
+        if (!isTouch) {
+            const cursorEl   = document.getElementById('cursor');
+            const cursorRing = document.getElementById('cursorRing');
+            let mx = 0, my = 0, rx = 0, ry = 0;
+
+            document.addEventListener('mousemove', e => {
+                mx = e.clientX;
+                my = e.clientY;
+                gsap.to(cursorEl, { x: mx, y: my, duration: 0.12, ease: 'power2.out' });
+            });
+
+            (function tick() {
+                rx += (mx - rx) * 0.11;
+                ry += (my - ry) * 0.11;
+                cursorRing.style.transform = `translate(calc(${rx}px - 50%), calc(${ry}px - 50%))`;
+                requestAnimationFrame(tick);
+            })();
+
+            document.querySelectorAll('a, button').forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    gsap.to(cursorRing, { scale: 2,   opacity: 0.3,  duration: 0.35 });
+                    gsap.to(cursorEl,   { scale: 0.4,               duration: 0.35 });
+                });
+                el.addEventListener('mouseleave', () => {
+                    gsap.to(cursorRing, { scale: 1,   opacity: 0.55, duration: 0.35 });
+                    gsap.to(cursorEl,   { scale: 1,                  duration: 0.35 });
+                });
+            });
+        }
+
+        /* ── Nav: frosted glass ao rolar ───────────── */
+        const navEl = document.getElementById('nav');
+        window.addEventListener('scroll', () => {
+            navEl.classList.toggle('is-scrolled', window.scrollY > 40);
+        }, { passive: true });
+
+        /* ── Hamburger / Mobile Menu ───────────────── */
+        const burger     = document.getElementById('navBurger');
+        const mobileMenu = document.getElementById('mobileMenu');
+        let menuOpen = false;
+
+        function toggleMenu(force) {
+            menuOpen = force !== undefined ? force : !menuOpen;
+            burger.classList.toggle('is-open', menuOpen);
+            burger.setAttribute('aria-expanded', String(menuOpen));
+            mobileMenu.classList.toggle('is-open', menuOpen);
+            document.body.style.overflow = menuOpen ? 'hidden' : '';
+        }
+
+        burger.addEventListener('click', () => toggleMenu());
+
+        mobileMenu.querySelectorAll('a').forEach(a => {
+            a.addEventListener('click', () => toggleMenu(false));
         });
 
-        (function tickRing() {
-            rx += (mx - rx) * 0.11;
-            ry += (my - ry) * 0.11;
-            cursorRing.style.transform = `translate(calc(${rx}px - 50%), calc(${ry}px - 50%))`;
-            requestAnimationFrame(tickRing);
-        })();
-
-        document.querySelectorAll('a, button').forEach(el => {
-            el.addEventListener('mouseenter', () => {
-                gsap.to(cursorRing, { scale: 2,   opacity: 0.3,  duration: 0.35 });
-                gsap.to(cursor,     { scale: 0.4,               duration: 0.35 });
-            });
-            el.addEventListener('mouseleave', () => {
-                gsap.to(cursorRing, { scale: 1,   opacity: 0.55, duration: 0.35 });
-                gsap.to(cursor,     { scale: 1,                  duration: 0.35 });
-            });
+        /* Fecha menu com ESC */
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape' && menuOpen) toggleMenu(false);
         });
 
-        /* ── Loader ─────────────────────────────────── */
+        /* ── Loader ────────────────────────────────── */
         let heroStarted = false;
 
         function safeStartHero() {
@@ -769,102 +957,114 @@
             startHero();
         }
 
-        /* Fallback: se o loader travar por qualquer razão, mostra o conteúdo em 4s */
-        const loaderFallback = setTimeout(safeStartHero, 4000);
+        /* Fallback: garante que o conteúdo aparece mesmo se o loader travar */
+        const loaderFallback = setTimeout(safeStartHero, 4500);
 
-        gsap.timeline({
-            onComplete() {
-                clearTimeout(loaderFallback);
-                document.getElementById('loader').style.pointerEvents = 'none';
-                safeStartHero();
-            }
-        })
-        .to('#loaderWordmark', { opacity: 1, duration: 0.9, ease: 'power2.out' })
-        .to('#loaderBar',      { width: '100%', duration: 0.9, ease: 'power2.inOut' }, '-=0.4')
-        .to('#loader',         { yPercent: -100, duration: 1.05, ease: 'power4.inOut', delay: 0.45 });
+        if (reducedMo) {
+            /* Sem animações: tudo visível imediatamente */
+            clearTimeout(loaderFallback);
+            safeStartHero();
+        } else {
+            gsap.timeline({
+                onComplete() {
+                    clearTimeout(loaderFallback);
+                    document.getElementById('loader').style.pointerEvents = 'none';
+                    safeStartHero();
+                }
+            })
+            .to('#loaderWordmark', { opacity: 1, duration: 0.9, ease: 'power2.out' })
+            .to('#loaderBar',      { width: '100%', duration: 0.9, ease: 'power2.inOut' }, '-=0.4')
+            .to('#loader',         { yPercent: -100, duration: 1.05, ease: 'power4.inOut', delay: 0.4 });
+        }
 
-        /* ── Hero entrance ──────────────────────────── */
+        /* ── Hero — Animações de entrada ───────────── */
         function startHero() {
-            const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
+            if (reducedMo) {
+                /* Mostra tudo instantaneamente sem animações */
+                gsap.set('#navLogo, #navMenu, #navBurger', { opacity: 1, y: 0 });
+                gsap.set('#heroEyebrow, #heroSubtitle, #heroCta', { opacity: 1, y: 0 });
+                gsap.set('#heroImageCol, #scrollHint, #sideBadge', { opacity: 1 });
+                gsap.set('.title-line__inner', { y: '0%' });
+                if (!isMobile) {
+                    gsap.set('#decoVline', { opacity: 0.55, scaleY: 1 });
+                    gsap.set('#decoRingLg, #decoRingSm, #decoDotA, #decoDotB, #decoDotC, #decoHrule',
+                             { opacity: 1 });
+                }
+                return;
+            }
+
+            const speed = isMobile ? 0.85 : 1.0; /* mobile ligeiramente mais rápido */
+            const tl    = gsap.timeline({ defaults: { ease: 'power4.out' } });
 
             tl
             /* Nav */
-            .to('#navLogo',  { opacity: 1, y: 0, duration: 1.0 },                    0.0)
-            .to('#navMenu',  { opacity: 1, y: 0, duration: 1.0 },                    0.1)
+            .to('#navLogo',   { opacity: 1, y: 0, duration: speed },        0.00)
+            .to('#navMenu',   { opacity: 1, y: 0, duration: speed },        0.10)
+            .to('#navBurger', { opacity: 1, y: 0, duration: speed },        0.10)
 
-            /* Photo column */
-            .to('#heroImageCol', { opacity: 1, duration: 2.0, ease: 'power2.out' },  0.2)
+            /* Foto */
+            .to('#heroImageCol', {
+                opacity: 1, duration: isMobile ? 1.4 : 2.0, ease: 'power2.out'
+            }, 0.15)
 
             /* Eyebrow */
-            .to('#heroEyebrow',  { opacity: 1, y: 0, duration: 1.0 },                0.35)
+            .to('#heroEyebrow', { opacity: 1, y: 0, duration: speed }, 0.35)
 
-            /* Title lines — clip reveal */
-            .to(['#titleLine1','#titleLine2','#titleLine3'], {
-                y: '0%', duration: 1.5, stagger: 0.13, ease: 'power4.out'
-            }, 0.5)
+            /* Título — clip reveal linha a linha */
+            .to('.title-line__inner', {
+                y: '0%', duration: isMobile ? 1.1 : 1.5, stagger: 0.12, ease: 'power4.out'
+            }, 0.48)
 
-            /* Subtitle */
-            .to('#heroSubtitle', { opacity: 1, y: 0, duration: 1.1 },                0.9)
+            /* Subtítulo */
+            .to('#heroSubtitle', { opacity: 1, y: 0, duration: speed }, 0.88)
 
             /* CTA */
-            .to('#heroCta',      { opacity: 1, y: 0, duration: 1.0 },                1.05)
+            .to('#heroCta', { opacity: 1, y: 0, duration: speed }, 1.02)
 
-            /* Decoratives */
-            .to('#decoVline',    { opacity: 0.55, scaleY: 1, duration: 1.3 },        0.65)
-            .to(['#decoRingLg', '#decoRingSm'], {
-                opacity: 1, duration: 1.2, stagger: 0.2
-            }, 0.75)
-            .to(['#decoDotA','#decoDotB','#decoDotC'], {
-                opacity: 1, duration: 0.8, stagger: 0.1
-            }, 1.0)
-            .to('#decoHrule',    { opacity: 0.5, duration: 1.0 },                    0.9)
+            /* Decorativos dourados (desktop) */
+            .to('#decoVline', { opacity: 0.55, scaleY: 1, duration: 1.3, ease: 'power3.out' }, 0.60)
+            .to('#decoRingLg, #decoRingSm', { opacity: 1, duration: 1.2, stagger: 0.2 },        0.72)
+            .to('#decoDotA, #decoDotB, #decoDotC', { opacity: 1, duration: 0.8, stagger: 0.1 }, 0.95)
+            .to('#decoHrule', { opacity: 0.5, duration: 1.0 },                                  0.85)
 
-            /* Scroll & badge */
-            .to('#scrollHint',   { opacity: 1, duration: 1.0 },                      1.3)
-            .to('#sideBadge',    { opacity: 1, duration: 1.0 },                      1.4);
+            /* Scroll hint & badge */
+            .to('#scrollHint', { opacity: 1, duration: 1.0 }, 1.28)
+            .to('#sideBadge',  { opacity: 1, duration: 1.0 }, 1.40);
         }
 
-        /* ── Continuous float (breathing) ───────────── */
-        gsap.delayedCall(2.6, () => {
-            gsap.to('#decoVline', {
-                y: -20, duration: 3.8, ease: 'sine.inOut', yoyo: true, repeat: -1
+        /* ── Float contínuo — "respiração" dos decorativos ── */
+        if (!reducedMo) {
+            gsap.delayedCall(2.5, () => {
+                gsap.to('#decoVline',  { y: -20,         duration: 3.8, ease: 'sine.inOut', yoyo: true, repeat: -1 });
+                gsap.to('#decoRingLg', { y: -14, x:  7,  duration: 4.2, ease: 'sine.inOut', yoyo: true, repeat: -1 });
+                gsap.to('#decoRingSm', { y:  11, x: -6,  duration: 3.4, ease: 'sine.inOut', yoyo: true, repeat: -1, delay: 1.0 });
+                gsap.to('#decoDotA',   { y:  -9,         duration: 3.0, ease: 'sine.inOut', yoyo: true, repeat: -1 });
+                gsap.to('#decoDotB',   { y:  -6,         duration: 3.3, ease: 'sine.inOut', yoyo: true, repeat: -1, delay: 0.45 });
+                gsap.to('#decoDotC',   { y: -11,         duration: 3.6, ease: 'sine.inOut', yoyo: true, repeat: -1, delay: 0.85 });
+                gsap.to('#decoHrule',  {
+                    scaleX: 0.55, transformOrigin: 'left center',
+                    duration: 3.2, ease: 'sine.inOut', yoyo: true, repeat: -1, delay: 0.6
+                });
             });
-            gsap.to('#decoRingLg', {
-                y: -14, x: 7,  duration: 4.2, ease: 'sine.inOut', yoyo: true, repeat: -1
-            });
-            gsap.to('#decoRingSm', {
-                y: 11,  x: -6, duration: 3.4, ease: 'sine.inOut', yoyo: true, repeat: -1, delay: 1.0
-            });
-            gsap.to('#decoDotA', {
-                y: -9,  duration: 3.0, ease: 'sine.inOut', yoyo: true, repeat: -1
-            });
-            gsap.to('#decoDotB', {
-                y: -6,  duration: 3.3, ease: 'sine.inOut', yoyo: true, repeat: -1, delay: 0.5
-            });
-            gsap.to('#decoDotC', {
-                y: -11, duration: 3.6, ease: 'sine.inOut', yoyo: true, repeat: -1, delay: 0.9
-            });
-            gsap.to('#decoHrule', {
-                scaleX: 0.55, transformOrigin: 'left center',
-                duration: 3.2, ease: 'sine.inOut', yoyo: true, repeat: -1, delay: 0.6
-            });
-        });
+        }
 
-        /* ── Mouse-move parallax (subtle depth) ─────── */
-        document.addEventListener('mousemove', e => {
-            const xR = (e.clientX / window.innerWidth  - 0.5);
-            const yR = (e.clientY / window.innerHeight - 0.5);
+        /* ── Parallax ao mover o mouse (desktop) ─────── */
+        if (!isTouch && !isMobile && !reducedMo) {
+            document.addEventListener('mousemove', e => {
+                const xR = (e.clientX / window.innerWidth  - 0.5);
+                const yR = (e.clientY / window.innerHeight - 0.5);
 
-            gsap.to('#heroImageCol', {
-                x: xR * 22, y: yR * 10, duration: 1.6, ease: 'power2.out'
+                gsap.to('#heroImageCol', {
+                    x: xR * 20, y: yR * 8, duration: 1.8, ease: 'power2.out'
+                });
+                gsap.to('#decoRingLg', {
+                    x: xR * -16, y: yR * -10, duration: 2.2, ease: 'power2.out', overwrite: 'auto'
+                });
+                gsap.to('#decoRingSm', {
+                    x: xR *  12, y: yR *  12, duration: 2.2, ease: 'power2.out', overwrite: 'auto'
+                });
             });
-            gsap.to('#decoRingLg', {
-                x: xR * -18, y: yR * -10, duration: 2.2, ease: 'power2.out', overwrite: 'auto'
-            });
-            gsap.to('#decoRingSm', {
-                x: xR *  14, y: yR *  12, duration: 2.2, ease: 'power2.out', overwrite: 'auto'
-            });
-        });
+        }
     </script>
 
 </body>
