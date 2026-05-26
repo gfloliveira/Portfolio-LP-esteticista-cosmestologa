@@ -748,6 +748,271 @@
 
             .scroll-hint { display: none; }
         }
+
+        /* =============================================
+           Sessão 02 — Sobre a Profissional
+        ============================================= */
+        .about {
+            position: relative;
+            padding: 140px 0 150px;
+            background: var(--color-bg);
+            overflow: hidden;
+        }
+
+        /* Acento de fundo dourado suave lado direito */
+        .about::before {
+            content: '';
+            position: absolute;
+            top: 0; right: 0;
+            width: 55%;
+            height: 100%;
+            background: radial-gradient(ellipse 80% 60% at 100% 50%,
+                rgba(197, 160, 89, 0.045) 0%, transparent 100%);
+            pointer-events: none;
+        }
+
+        .about__container {
+            max-width: 1260px;
+            margin: 0 auto;
+            padding: 0 60px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 100px;
+            align-items: center;
+        }
+
+        /* ── Coluna da imagem ── */
+        .about__media { position: relative; }
+
+        .about__img-frame { position: relative; }
+
+        /* Cantos dourados em L — moldura offset */
+        .frame-corner {
+            position: absolute;
+            width: 76px;
+            height: 76px;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .frame-corner--tr {
+            top: -18px; right: -18px;
+            border-top:   1px solid rgba(197, 160, 89, 0.48);
+            border-right: 1px solid rgba(197, 160, 89, 0.48);
+        }
+
+        .frame-corner--bl {
+            bottom: -18px; left: -18px;
+            border-bottom: 1px solid rgba(197, 160, 89, 0.48);
+            border-left:   1px solid rgba(197, 160, 89, 0.48);
+        }
+
+        /* Wrapper com overflow oculto para o reveal */
+        .about__img-wrap {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 4/5;
+            overflow: hidden;
+            border-radius: 3px;
+        }
+
+        .about__img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center 18%;
+            display: block;
+            will-change: transform;
+            transform-origin: center center;
+        }
+
+        /* Label flutuante abaixo da foto */
+        .about__media-label {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-top: 22px;
+            padding-left: 2px;
+        }
+
+        .about__media-label span {
+            font-family: var(--font-serif);
+            font-size: 0.85rem;
+            font-weight: 300;
+            font-style: italic;
+            letter-spacing: 0.18em;
+            color: var(--color-text-muted);
+            white-space: nowrap;
+        }
+
+        .about__media-label-line {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(to right, rgba(197, 160, 89, 0.35), transparent);
+        }
+
+        /* ── Coluna de texto ── */
+        .about__body { position: relative; }
+
+        .about__eyebrow {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-family: var(--font-sans);
+            font-size: 0.64rem;
+            font-weight: 400;
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            color: var(--color-primary-gold);
+            margin-bottom: 26px;
+        }
+
+        .about__eyebrow::before {
+            content: '';
+            flex-shrink: 0;
+            width: 32px;
+            height: 1px;
+            background: var(--color-primary-gold);
+        }
+
+        .about__title {
+            font-family: var(--font-serif);
+            font-weight: 300;
+            font-size: clamp(2.4rem, 3.2vw, 4rem);
+            line-height: 1.1;
+            color: var(--color-text-dark);
+            margin-bottom: 32px;
+        }
+
+        /* Clip reveal — mesma técnica do hero */
+        .about-tl {
+            display: block;
+            overflow: hidden;
+            padding-bottom: 0.07em;
+        }
+
+        .about-tl__i { display: block; }
+
+        .about__title em {
+            font-style: italic;
+            color: var(--color-primary-gold);
+        }
+
+        /* Divisória dourada */
+        .about__divider {
+            width: 52px;
+            height: 1px;
+            background: linear-gradient(to right, var(--color-primary-gold), var(--color-gold-light));
+            margin-bottom: 28px;
+            transform-origin: left center;
+        }
+
+        /* Pull quote */
+        .about__quote {
+            font-family: var(--font-serif);
+            font-size: clamp(1rem, 1.3vw, 1.2rem);
+            font-weight: 300;
+            font-style: italic;
+            line-height: 1.75;
+            color: var(--color-text-dark);
+            border-left: 1px solid rgba(197, 160, 89, 0.4);
+            padding-left: 22px;
+            margin-bottom: 28px;
+        }
+
+        /* Parágrafos */
+        .about__para {
+            font-family: var(--font-sans);
+            font-size: 0.9rem;
+            font-weight: 300;
+            line-height: 1.95;
+            color: var(--color-text-muted);
+            margin-bottom: 16px;
+        }
+
+        .about__para:last-of-type { margin-bottom: 48px; }
+
+        /* Stats */
+        .about__stats {
+            display: flex;
+            align-items: center;
+        }
+
+        .about-stat {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding-right: 36px;
+        }
+
+        .about-stat__number {
+            font-family: var(--font-serif);
+            font-size: 2.8rem;
+            font-weight: 300;
+            line-height: 1;
+            letter-spacing: -0.02em;
+            color: var(--color-text-dark);
+        }
+
+        .about-stat__label {
+            font-family: var(--font-sans);
+            font-size: 0.6rem;
+            font-weight: 400;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--color-text-light);
+            line-height: 1.55;
+        }
+
+        .about-stat__sep {
+            width: 1px;
+            height: 44px;
+            flex-shrink: 0;
+            background: linear-gradient(to bottom,
+                transparent, rgba(197, 160, 89, 0.38), transparent);
+            margin-right: 36px;
+        }
+
+        /* ── Responsive Sobre ≤1100px ── */
+        @media (max-width: 1100px) {
+            .about__container { padding: 0 44px; gap: 64px; }
+        }
+
+        @media (max-width: 768px) {
+            .about { padding: 80px 0 90px; }
+
+            .about__container {
+                grid-template-columns: 1fr;
+                padding: 0 24px;
+                gap: 44px;
+            }
+
+            .about__img-wrap {
+                aspect-ratio: 3/4;
+                max-width: 78%;
+                margin: 0 auto;
+            }
+
+            .about__media-label {
+                max-width: 78%;
+                margin: 16px auto 0;
+            }
+
+            .about__title { font-size: clamp(2rem, 7vw, 2.8rem); }
+
+            .about-stat { padding-right: 24px; }
+            .about-stat__sep { margin-right: 24px; }
+            .about-stat__number { font-size: 2.3rem; }
+        }
+
+        @media (max-width: 480px) {
+            .about__img-wrap  { max-width: 100%; }
+            .about__media-label { max-width: 100%; }
+
+            .about__stats { flex-wrap: wrap; gap: 28px; }
+            .about-stat   { padding-right: 0; }
+            .about-stat__sep { display: none; }
+        }
     </style>
 </head>
 <body>
@@ -875,6 +1140,84 @@
             <div class="side-badge__line"></div>
         </div>
 
+    </section>
+
+
+    <!-- ══════════════════════════════════════════════
+         Sessão 02 — Sobre a Profissional
+    ══════════════════════════════════════════════ -->
+    <section class="about" id="sobre">
+        <div class="about__container">
+
+            <!-- Coluna esquerda: imagem editorial -->
+            <div class="about__media">
+                <div class="about__img-frame" id="aboutImgFrame">
+                    <div class="frame-corner frame-corner--tr" id="frameTR"></div>
+                    <div class="frame-corner frame-corner--bl" id="frameBL"></div>
+                    <div class="about__img-wrap" id="aboutImgWrap">
+                        <img
+                            class="about__img"
+                            id="aboutImg"
+                            src="assets/hero.jpg"
+                            alt="Laís Nayélli — Esteticista e Cosmetóloga"
+                            loading="lazy"
+                            width="893"
+                            height="1191"
+                        >
+                    </div>
+                </div>
+                <div class="about__media-label" id="aboutMediaLabel">
+                    <span>Laís Nayélli</span>
+                    <div class="about__media-label-line"></div>
+                </div>
+            </div>
+
+            <!-- Coluna direita: texto editorial -->
+            <div class="about__body">
+
+                <p class="about__eyebrow" id="aboutEyebrow">
+                    A Filosofia do Cuidado
+                </p>
+
+                <h2 class="about__title">
+                    <span class="about-tl"><span class="about-tl__i" id="abtl1">Uma filosofia</span></span>
+                    <span class="about-tl"><span class="about-tl__i" id="abtl2">que <em>transforma</em></span></span>
+                    <span class="about-tl"><span class="about-tl__i" id="abtl3">peles e vidas.</span></span>
+                </h2>
+
+                <div class="about__divider" id="aboutDivider"></div>
+
+                <blockquote class="about__quote" id="aboutQuote">
+                    "Cada pele conta uma história única. Meu trabalho é ouvi-la com atenção e revelar o seu melhor brilho."
+                </blockquote>
+
+                <p class="about__para" id="aboutPara1">
+                    Com formação em Estética e Cosmetologia e anos dedicados ao estudo das melhores técnicas, combino ciência e sensibilidade para criar protocolos verdadeiramente personalizados.
+                </p>
+
+                <p class="about__para" id="aboutPara2">
+                    Cada cliente é única, e cada tratamento é pensado do início ao fim com atenção aos mínimos detalhes — porque acredito que o cuidado autêntico começa pelo olhar individualizado.
+                </p>
+
+                <div class="about__stats" id="aboutStats">
+                    <div class="about-stat">
+                        <span class="about-stat__number" data-target="8" data-suffix="+">0+</span>
+                        <span class="about-stat__label">Anos de<br>Experiência</span>
+                    </div>
+                    <div class="about-stat__sep"></div>
+                    <div class="about-stat">
+                        <span class="about-stat__number" data-target="500" data-suffix="+">0+</span>
+                        <span class="about-stat__label">Clientes<br>Atendidas</span>
+                    </div>
+                    <div class="about-stat__sep"></div>
+                    <div class="about-stat">
+                        <span class="about-stat__number" data-target="20" data-suffix="+">0+</span>
+                        <span class="about-stat__label">Protocolos<br>Especializados</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </section>
 
 
@@ -1092,6 +1435,84 @@
                 });
                 gsap.to('#decoRingSm', {
                     x: xR *  12, y: yR *  12, duration: 2.2, ease: 'power2.out', overwrite: 'auto'
+                });
+            });
+        }
+
+        /* ══════════════════════════════════════════
+           Sessão 02 — Sobre: ScrollTrigger animations
+        ══════════════════════════════════════════ */
+
+        /* Estados iniciais da seção */
+        gsap.set('.about-tl__i', { y: '106%' });
+        gsap.set(['#aboutImgWrap'],                    { clipPath: 'inset(0 100% 0 0)' });
+        gsap.set(['#frameTR', '#frameBL'],             { opacity: 0, scale: 0.6 });
+        gsap.set('#aboutMediaLabel',                   { opacity: 0, x: -14 });
+        gsap.set('#aboutEyebrow',                      { opacity: 0, y: 14 });
+        gsap.set('#aboutDivider',                      { scaleX: 0 });
+        gsap.set('#aboutQuote',                        { opacity: 0, y: 20 });
+        gsap.set('#aboutPara1, #aboutPara2',           { opacity: 0, y: 18 });
+        gsap.set('.about-stat, .about-stat__sep',      { opacity: 0, y: 22 });
+
+        /* Timeline principal — dispara quando a seção entra na viewport */
+        gsap.timeline({
+            scrollTrigger: {
+                trigger: '#sobre',
+                start: 'top 70%',
+                once: true
+            }
+        })
+        /* 1. Reveal da foto: máscara desliza da direita */
+        .to('#aboutImgWrap', {
+            clipPath: 'inset(0 0% 0 0)', duration: 1.5, ease: 'power4.inOut'
+        })
+        /* 2. Cantos dourados surgem com mola */
+        .to('#frameTR', { opacity: 1, scale: 1, duration: 0.8, ease: 'back.out(1.6)' }, '-=0.9')
+        .to('#frameBL', { opacity: 1, scale: 1, duration: 0.8, ease: 'back.out(1.6)' }, '-=0.65')
+        /* 3. Label da foto */
+        .to('#aboutMediaLabel', { opacity: 1, x: 0, duration: 0.7, ease: 'power3.out' }, '-=0.5')
+        /* 4. Eyebrow */
+        .to('#aboutEyebrow',  { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }, '-=0.6')
+        /* 5. Título clip reveal */
+        .to('.about-tl__i',   { y: '0%', duration: 1.2, stagger: 0.1, ease: 'power4.out' }, '-=0.5')
+        /* 6. Divisória cresce */
+        .to('#aboutDivider',  { scaleX: 1, duration: 0.8, ease: 'power3.out' }, '-=0.4')
+        /* 7. Quote aparece */
+        .to('#aboutQuote',    { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' }, '-=0.3')
+        /* 8. Parágrafos em cascata */
+        .to('#aboutPara1',    { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }, '-=0.3')
+        .to('#aboutPara2',    { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }, '-=0.55')
+        /* 9. Stats entram em escada */
+        .to('.about-stat, .about-stat__sep', {
+            opacity: 1, y: 0, duration: 0.7, stagger: 0.1, ease: 'power3.out'
+        }, '-=0.3');
+
+        /* Parallax da foto no scroll (desktop) */
+        if (!isMobile && !reducedMo) {
+            gsap.to('#aboutImg', {
+                yPercent: -14,
+                ease: 'none',
+                scrollTrigger: {
+                    trigger: '#sobre',
+                    start: 'top bottom',
+                    end: 'bottom top',
+                    scrub: 1.8
+                }
+            });
+        }
+
+        /* Contador animado nos stats */
+        if (!reducedMo) {
+            document.querySelectorAll('.about-stat__number').forEach(el => {
+                const target = parseInt(el.dataset.target);
+                const suffix = el.dataset.suffix || '';
+                const obj    = { val: 0 };
+                gsap.to(obj, {
+                    val: target,
+                    duration: 2.4,
+                    ease: 'power2.out',
+                    onUpdate() { el.textContent = Math.round(obj.val) + suffix; },
+                    scrollTrigger: { trigger: el, start: 'top 88%', once: true }
                 });
             });
         }
