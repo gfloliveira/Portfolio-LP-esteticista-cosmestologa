@@ -664,9 +664,9 @@
                 background: linear-gradient(
                     to top,
                     var(--color-bg)                   0%,
-                    rgba(250, 249, 246, 0.97)         32%,
-                    rgba(250, 249, 246, 0.82)         52%,
-                    rgba(250, 249, 246, 0.40)         72%,
+                    rgba(250, 249, 246, 0.99)         38%,
+                    rgba(250, 249, 246, 0.93)         56%,
+                    rgba(250, 249, 246, 0.45)         74%,
                     rgba(250, 249, 246, 0.05)        100%
                 );
             }
@@ -676,15 +676,33 @@
 
             /* Conteúdo */
             .hero__content { padding: 0 24px; }
-            .hero__text    { max-width: 100%; }
+
+            /* Reordenação editorial mobile:
+               título primeiro (impacto), eyebrow abaixo como credencial */
+            .hero__text {
+                max-width: 100%;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .hero__title    { order: 1; margin-bottom: 10px; }
+
+            .hero__eyebrow  {
+                order: 2;
+                margin-bottom: 18px;
+                margin-top: 0;
+                font-size: 0.6rem;
+                letter-spacing: 0.3em;
+            }
 
             .hero__subtitle {
+                order: 3;
                 max-width: 100%;
                 font-size: 0.94rem;
                 margin-bottom: 40px;
             }
 
-            .hero__cta { gap: 20px; }
+            .hero__cta { order: 4; gap: 20px; }
 
             /* Decorativos: escondem no mobile (ruído visual) */
             .hero__deco { display: none; }
@@ -704,7 +722,7 @@
                 font-size: clamp(2.4rem, 9.5vw, 3.2rem);
             }
 
-            .hero__eyebrow { margin-bottom: 18px; }
+            .hero__eyebrow { margin-bottom: 14px; font-size: 0.58rem; }
 
             .hero__subtitle {
                 font-size: 0.88rem;
