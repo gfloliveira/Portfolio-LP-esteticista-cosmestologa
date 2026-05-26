@@ -149,7 +149,6 @@
             color: var(--color-text-dark);
             text-decoration: none;
             opacity: 0;
-            transform: translateY(-8px);
         }
 
         .nav__logo span {
@@ -161,7 +160,6 @@
             display: flex;
             gap: 48px;
             opacity: 0;
-            transform: translateY(-8px);
         }
 
         .nav__menu a {
@@ -271,7 +269,6 @@
             color: var(--color-primary-gold);
             margin-bottom: 30px;
             opacity: 0;
-            transform: translateY(16px);
         }
 
         .hero__eyebrow::before {
@@ -321,7 +318,6 @@
             max-width: 400px;
             margin-bottom: 56px;
             opacity: 0;
-            transform: translateY(18px);
         }
 
         /* CTA group */
@@ -330,7 +326,6 @@
             align-items: center;
             gap: 44px;
             opacity: 0;
-            transform: translateY(18px);
         }
 
         /* Primary button */
@@ -708,20 +703,32 @@
     <!-- GSAP core + ScrollTrigger -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-    <!-- Lenis smooth scroll -->
-    <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/bundled/lenis.min.js"></script>
+    <!-- Lenis smooth scroll (pacote atualizado, path correto do npm) -->
+    <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
 
     <script>
-        /* ── Lenis ──────────────────────────────────── */
-        const lenis = new Lenis({
-            lerp:        0.08,
-            smoothWheel: true,
-            syncTouch:   false,
-        });
-
         gsap.registerPlugin(ScrollTrigger);
-        gsap.ticker.add(t => lenis.raf(t * 1000));
-        gsap.ticker.lagSmoothing(0);
+
+        /* ── Estados iniciais via GSAP (evita conflito com CSS transform) ── */
+        gsap.set('#navLogo',      { opacity: 0, y: -10 });
+        gsap.set('#navMenu',      { opacity: 0, y: -10 });
+        gsap.set('#heroEyebrow',  { opacity: 0, y: 16  });
+        gsap.set('#heroSubtitle', { opacity: 0, y: 18  });
+        gsap.set('#heroCta',      { opacity: 0, y: 18  });
+        gsap.set('#heroImageCol', { opacity: 0 });
+        gsap.set('#scrollHint',   { opacity: 0 });
+        gsap.set('#sideBadge',    { opacity: 0 });
+        gsap.set('#decoVline',    { opacity: 0, scaleY: 0 });
+        gsap.set(['#decoRingLg','#decoRingSm','#decoDotA','#decoDotB','#decoDotC','#decoHrule'], { opacity: 0 });
+
+        /* ── Lenis (com fallback seguro caso CDN falhe) ─────────────────── */
+        try {
+            const lenis = new Lenis({ lerp: 0.08, smoothWheel: true, syncTouch: false });
+            gsap.ticker.add(t => lenis.raf(t * 1000));
+            gsap.ticker.lagSmoothing(0);
+        } catch (e) {
+            console.warn('[Lenis] Não inicializou, usando scroll nativo.', e);
+        }
 
         /* ── Custom Cursor ──────────────────────────── */
         const cursor     = document.getElementById('cursor');
@@ -753,10 +760,23 @@
         });
 
         /* ── Loader ─────────────────────────────────── */
+        let heroStarted = false;
+
+        function safeStartHero() {
+            if (heroStarted) return;
+            heroStarted = true;
+            document.getElementById('loader').style.display = 'none';
+            startHero();
+        }
+
+        /* Fallback: se o loader travar por qualquer razão, mostra o conteúdo em 4s */
+        const loaderFallback = setTimeout(safeStartHero, 4000);
+
         gsap.timeline({
             onComplete() {
+                clearTimeout(loaderFallback);
                 document.getElementById('loader').style.pointerEvents = 'none';
-                startHero();
+                safeStartHero();
             }
         })
         .to('#loaderWordmark', { opacity: 1, duration: 0.9, ease: 'power2.out' })
