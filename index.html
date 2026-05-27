@@ -672,20 +672,20 @@
                 right: 0; left: 0;
             }
 
-            /* Véu invertido: funde de baixo (branco) para cima (foto aparece) */
+            /* Véu mobile: base opaca (área do texto) → topo transparente (rosto visível) */
             .hero__image-col::after {
                 background: linear-gradient(
                     to top,
                     var(--color-bg)                   0%,
-                    rgba(250, 249, 246, 0.99)         38%,
-                    rgba(250, 249, 246, 0.93)         56%,
-                    rgba(250, 249, 246, 0.45)         74%,
-                    rgba(250, 249, 246, 0.05)        100%
+                    rgba(250, 249, 246, 0.98)        42%,
+                    rgba(250, 249, 246, 0.75)        54%,
+                    rgba(250, 249, 246, 0.12)        72%,
+                    transparent                      88%
                 );
             }
 
-            /* Foto: foca o rosto na parte superior da tela */
-            .hero__image { object-position: center 10%; }
+            /* object-position vertical não tem efeito em fill-height; horizontal centraliza o rosto */
+            .hero__image { object-position: center top; }
 
             /* Conteúdo */
             .hero__content { padding: 0 24px; }
