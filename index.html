@@ -254,26 +254,15 @@
             border-radius: 50%;
             border: 1.5px solid rgba(197, 160, 89, 0.65);
             box-shadow: 0 0 8px rgba(197, 160, 89, 0.18);
-            animation: rippleExpand ease-out infinite;
             pointer-events: none;
+            opacity: 0; /* GSAP controla opacity e scale */
         }
 
-        /* 5 ondas em posições e durações dessincronizadas */
-        .ripple--1 { width: 130px; height: 130px; top: 14%; left:  8%;  animation-duration:  9s; animation-delay:  0s;    }
-        .ripple--2 { width: 160px; height: 160px; top: 50%; left:  4%;  animation-duration: 12s; animation-delay: -3.5s;  }
-        .ripple--3 { width: 100px; height: 100px; top: 72%; left: 28%;  animation-duration: 10s; animation-delay: -7s;    }
-        .ripple--4 { width: 140px; height: 140px; top: 28%; left: 34%;  animation-duration: 11s; animation-delay: -5s;    }
-        .ripple--5 { width: 110px; height: 110px; top: 62%; left: 16%;  animation-duration: 14s; animation-delay: -9s;    }
-
-        @keyframes rippleExpand {
-            0%   { transform: scale(0.5); opacity: 0;    }
-            8%   { opacity: 0.75;                        }
-            100% { transform: scale(4.0); opacity: 0;    }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            .ripple { animation: none !important; opacity: 0; }
-        }
+        .ripple--1 { width: 130px; height: 130px; top: 14%; left:  8%; }
+        .ripple--2 { width: 160px; height: 160px; top: 50%; left:  4%; }
+        .ripple--3 { width: 100px; height: 100px; top: 72%; left: 28%; }
+        .ripple--4 { width: 140px; height: 140px; top: 28%; left: 34%; }
+        .ripple--5 { width: 110px; height: 110px; top: 62%; left: 16%; }
 
         /* ── Coluna da foto (desktop: lado direito) ── */
         .hero__image-col {
@@ -1414,6 +1403,38 @@
                 pxY(yR *  8);
             });
         }
+
+        /* ── Ripple — ondas douradas via GSAP (não depende de prefers-reduced-motion) ── */
+        (function () {
+            const configs = [
+                { sel: '.ripple--1', dur: 9,  off: 0.00 },
+                { sel: '.ripple--2', dur: 12, off: 0.29 },
+                { sel: '.ripple--3', dur: 10, off: 0.70 },
+                { sel: '.ripple--4', dur: 11, off: 0.45 },
+                { sel: '.ripple--5', dur: 14, off: 0.64 },
+            ];
+
+            configs.forEach(({ sel, dur, off }) => {
+                const el = document.querySelector(sel);
+                if (!el) return;
+
+                function pulse() {
+                    gsap.timeline({ onComplete: pulse })
+                        .set(el, { scale: 0.5, opacity: 0 })
+                        .to(el, { opacity: 0.70, duration: dur * 0.08, ease: 'none' })
+                        .to(el, { scale: 4.2,   opacity: 0, duration: dur * 0.92, ease: 'power1.out' }, '<');
+                }
+
+                /* Inicia no meio do ciclo para efeito imediato e assíncrono */
+                gsap.set(el, { scale: 0.5 + 3.7 * off, opacity: off < 0.5 ? 0.5 : 0.1 });
+                gsap.to(el, {
+                    scale: 4.2, opacity: 0,
+                    duration: dur * (1 - off),
+                    ease: 'power1.out',
+                    onComplete: pulse
+                });
+            });
+        })();
 
         /* ══════════════════════════════════════════
            Sessão 02 — Sobre: ScrollTrigger animations
