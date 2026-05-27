@@ -277,15 +277,63 @@
             background: var(--color-bg);
         }
 
-        /* Gradiente ambiente dourado */
+        /* Fundo ambiente com orbs douradas animadas */
         .hero__ambient {
             position: absolute;
             inset: 0;
             z-index: 0;
-            background:
-                radial-gradient(ellipse 70% 60% at 80% 30%, rgba(197, 160, 89, 0.07) 0%, transparent 100%),
-                radial-gradient(ellipse 50% 50% at 10% 82%, rgba(197, 160, 89, 0.04) 0%, transparent 100%),
-                linear-gradient(160deg, #FDFCF9 0%, #FAF8F3 55%, #F6F2EB 100%);
+            overflow: hidden;
+            background: linear-gradient(160deg, #FDFCF9 0%, #FAF8F3 55%, #F6F2EB 100%);
+        }
+
+        .ambient-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(72px);
+            will-change: transform;
+        }
+
+        .ambient-orb--1 {
+            width: 64%;
+            height: 64%;
+            top: -18%;
+            right: -10%;
+            background: radial-gradient(ellipse at center,
+                rgba(197, 160, 89, 0.26) 0%,
+                rgba(197, 160, 89, 0.08) 45%,
+                transparent 70%);
+            animation: orbDrift1 14s ease-in-out infinite;
+        }
+
+        .ambient-orb--2 {
+            width: 48%;
+            height: 56%;
+            bottom: -22%;
+            left: -10%;
+            background: radial-gradient(ellipse at center,
+                rgba(197, 160, 89, 0.16) 0%,
+                rgba(197, 160, 89, 0.05) 50%,
+                transparent 70%);
+            animation: orbDrift2 18s ease-in-out infinite;
+            animation-delay: -5s;
+        }
+
+        @keyframes orbDrift1 {
+            0%   { transform: translate(  0%,   0%) scale(1.00); }
+            30%  { transform: translate( -7%,   9%) scale(1.14); }
+            65%  { transform: translate(  5%,  -7%) scale(0.90); }
+            100% { transform: translate(  0%,   0%) scale(1.00); }
+        }
+
+        @keyframes orbDrift2 {
+            0%   { transform: translate(  0%,   0%) scale(1.00); }
+            40%  { transform: translate(  8%,  -8%) scale(1.18); }
+            72%  { transform: translate( -6%,   6%) scale(0.86); }
+            100% { transform: translate(  0%,   0%) scale(1.00); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .ambient-orb { animation: none !important; }
         }
 
         /* ── Coluna da foto (desktop: lado direito) ── */
@@ -1079,7 +1127,10 @@
     <!-- ── Hero ─────────────────────────────────── -->
     <section class="hero" id="hero">
 
-        <div class="hero__ambient"></div>
+        <div class="hero__ambient" aria-hidden="true">
+            <div class="ambient-orb ambient-orb--1"></div>
+            <div class="ambient-orb ambient-orb--2"></div>
+        </div>
 
         <!-- Foto real da profissional -->
         <div class="hero__image-col" id="heroImageCol">
@@ -1421,13 +1472,6 @@
             /* Scroll hint & badge */
             .to('#scrollHint', { opacity: 1, duration: 1.0 }, 1.28)
             .to('#sideBadge',  { opacity: 1, duration: 1.0 }, 1.40);
-        }
-
-        /* ── Ambient background — pulso suave do gradiente dourado (desktop + mobile) ── */
-        if (!reducedMo) {
-            gsap.to('.hero__ambient', {
-                opacity: 0.55, duration: 5.5, ease: 'sine.inOut', yoyo: true, repeat: -1
-            });
         }
 
         /* ── Float contínuo — "respiração" dos decorativos ── */
