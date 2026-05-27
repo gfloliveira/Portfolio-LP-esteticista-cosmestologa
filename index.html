@@ -277,7 +277,7 @@
             background: var(--color-bg);
         }
 
-        /* Fundo ambiente com orbs douradas animadas */
+        /* Hero ambient — ondas douradas expansivas */
         .hero__ambient {
             position: absolute;
             inset: 0;
@@ -286,54 +286,30 @@
             background: linear-gradient(160deg, #FDFCF9 0%, #FAF8F3 55%, #F6F2EB 100%);
         }
 
-        .ambient-orb {
+        .ripple {
             position: absolute;
             border-radius: 50%;
-            filter: blur(72px);
-            will-change: transform;
+            border: 1px solid rgba(197, 160, 89, 0.50);
+            will-change: transform, opacity;
+            animation: rippleExpand ease-out infinite;
+            pointer-events: none;
         }
 
-        .ambient-orb--1 {
-            width: 64%;
-            height: 64%;
-            top: -18%;
-            right: -10%;
-            background: radial-gradient(ellipse at center,
-                rgba(197, 160, 89, 0.26) 0%,
-                rgba(197, 160, 89, 0.08) 45%,
-                transparent 70%);
-            animation: orbDrift1 14s ease-in-out infinite;
-        }
+        /* 5 ondas em posições e durações dessincronizadas */
+        .ripple--1 { width:  90px; height:  90px; top: 14%; left:  8%;  animation-duration:  9s; animation-delay:  0s;    }
+        .ripple--2 { width: 110px; height: 110px; top: 50%; left:  4%;  animation-duration: 12s; animation-delay: -3.5s;  }
+        .ripple--3 { width:  70px; height:  70px; top: 72%; left: 28%;  animation-duration: 10s; animation-delay: -7s;    }
+        .ripple--4 { width: 100px; height: 100px; top: 28%; left: 34%;  animation-duration: 11s; animation-delay: -5s;    }
+        .ripple--5 { width:  80px; height:  80px; top: 62%; left: 16%;  animation-duration: 14s; animation-delay: -9s;    }
 
-        .ambient-orb--2 {
-            width: 48%;
-            height: 56%;
-            bottom: -22%;
-            left: -10%;
-            background: radial-gradient(ellipse at center,
-                rgba(197, 160, 89, 0.16) 0%,
-                rgba(197, 160, 89, 0.05) 50%,
-                transparent 70%);
-            animation: orbDrift2 18s ease-in-out infinite;
-            animation-delay: -5s;
-        }
-
-        @keyframes orbDrift1 {
-            0%   { transform: translate(  0%,   0%) scale(1.00); }
-            30%  { transform: translate( -7%,   9%) scale(1.14); }
-            65%  { transform: translate(  5%,  -7%) scale(0.90); }
-            100% { transform: translate(  0%,   0%) scale(1.00); }
-        }
-
-        @keyframes orbDrift2 {
-            0%   { transform: translate(  0%,   0%) scale(1.00); }
-            40%  { transform: translate(  8%,  -8%) scale(1.18); }
-            72%  { transform: translate( -6%,   6%) scale(0.86); }
-            100% { transform: translate(  0%,   0%) scale(1.00); }
+        @keyframes rippleExpand {
+            0%   { transform: scale(0.4); opacity: 0;    }
+            6%   { opacity: 0.60;                        }
+            100% { transform: scale(4.5); opacity: 0;    }
         }
 
         @media (prefers-reduced-motion: reduce) {
-            .ambient-orb { animation: none !important; }
+            .ripple { animation: none !important; opacity: 0; }
         }
 
         /* ── Coluna da foto (desktop: lado direito) ── */
@@ -1128,8 +1104,11 @@
     <section class="hero" id="hero">
 
         <div class="hero__ambient" aria-hidden="true">
-            <div class="ambient-orb ambient-orb--1"></div>
-            <div class="ambient-orb ambient-orb--2"></div>
+            <div class="ripple ripple--1"></div>
+            <div class="ripple ripple--2"></div>
+            <div class="ripple ripple--3"></div>
+            <div class="ripple ripple--4"></div>
+            <div class="ripple ripple--5"></div>
         </div>
 
         <!-- Foto real da profissional -->
