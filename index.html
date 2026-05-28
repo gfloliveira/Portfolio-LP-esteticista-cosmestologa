@@ -1300,25 +1300,19 @@
         /* Fallback: garante que o conteúdo aparece mesmo se o loader travar */
         const loaderFallback = setTimeout(safeStartHero, 4500);
 
-        if (reducedMo) {
-            /* Sem animações mas loader ainda aparece brevemente */
-            document.getElementById('loaderWordmark').style.opacity = '1';
-            document.getElementById('loaderBar').style.width      = '100%';
-            document.getElementById('loaderTagline').style.opacity = '1';
-            setTimeout(() => { clearTimeout(loaderFallback); safeStartHero(); }, 1200);
-        } else {
-            gsap.timeline({
-                onComplete() {
-                    clearTimeout(loaderFallback);
-                    document.getElementById('loader').style.pointerEvents = 'none';
-                    safeStartHero();
-                }
-            })
-            .to('#loaderWordmark', { opacity: 1, duration: 0.9, ease: 'power2.out' })
-            .to('#loaderBar',      { width: '100%', duration: 0.9, ease: 'power2.inOut' }, '-=0.4')
-            .to('#loaderTagline',  { opacity: 1, duration: 0.6, ease: 'power2.out' }, '-=0.2')
-            .to('#loader',         { yPercent: -100, duration: 1.05, ease: 'power4.inOut', delay: 0.4 });
-        }
+        /* Loader sempre animado via GSAP — independente de prefers-reduced-motion
+           (experiência de marca, não animação funcional) */
+        gsap.timeline({
+            onComplete() {
+                clearTimeout(loaderFallback);
+                document.getElementById('loader').style.pointerEvents = 'none';
+                safeStartHero();
+            }
+        })
+        .to('#loaderWordmark', { opacity: 1, duration: 0.9, ease: 'power2.out' })
+        .to('#loaderBar',      { width: '100%', duration: 0.9, ease: 'power2.inOut' }, '-=0.4')
+        .to('#loaderTagline',  { opacity: 1, duration: 0.6, ease: 'power2.out' }, '-=0.2')
+        .to('#loader',         { yPercent: -100, duration: 1.05, ease: 'power4.inOut', delay: 0.4 });
 
         /* ── Hero — Animações de entrada ───────────── */
         function startHero() {
