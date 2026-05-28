@@ -68,43 +68,66 @@
             background: var(--color-bg);
             z-index: 1000;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 20px;
+            overflow: hidden;
+        }
+
+        .loader__blob {
+            position: absolute;
+            width: 240px;
+            height: 240px;
+            background: radial-gradient(
+                ellipse at 38% 42%,
+                #E8CC88 0%,
+                var(--color-primary-gold) 50%,
+                #8B6B1A 100%
+            );
+            border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+            opacity: 0;
+            box-shadow:
+                0 0 60px rgba(197, 160, 89, 0.35),
+                0 0 120px rgba(197, 160, 89, 0.15);
+        }
+
+        .loader__text {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            pointer-events: none;
         }
 
         .loader__wordmark {
             font-family: var(--font-serif);
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             font-weight: 300;
-            letter-spacing: 0.45em;
+            letter-spacing: 0.5em;
             text-transform: uppercase;
-            color: var(--color-text-dark);
-            opacity: 0; /* animado por GSAP */
-        }
-
-        .loader__bar-wrap {
-            width: 160px;
-            height: 1px;
-            background: rgba(197, 160, 89, 0.15);
-            overflow: hidden;
-        }
-
-        .loader__bar {
-            width: 0%;
-            height: 100%;
-            background: linear-gradient(to right, var(--color-primary-gold), var(--color-gold-light));
+            color: #fff;
+            text-shadow: 0 1px 12px rgba(100, 60, 0, 0.3);
+            opacity: 0;
         }
 
         .loader__tagline {
             font-family: var(--font-sans);
-            font-size: 0.6rem;
+            font-size: 0.58rem;
             font-weight: 300;
-            letter-spacing: 0.32em;
+            letter-spacing: 0.34em;
             text-transform: uppercase;
-            color: var(--color-text-light);
+            color: rgba(255, 255, 255, 0.82);
             opacity: 0;
+        }
+
+        /* Canvas blob no hero */
+        #heroCanvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
         }
 
         /* =============================================
@@ -1013,11 +1036,11 @@
 
     <!-- ── Loader ───────────────────────────────── -->
     <div class="loader" id="loader">
-        <div class="loader__wordmark" id="loaderWordmark">Laís Nayélli</div>
-        <div class="loader__bar-wrap">
-            <div class="loader__bar" id="loaderBar"></div>
+        <div class="loader__blob" id="loaderBlob"></div>
+        <div class="loader__text">
+            <div class="loader__wordmark" id="loaderWordmark">Laís Nayélli</div>
+            <p class="loader__tagline" id="loaderTagline">Esteticista &amp; Cosmetóloga</p>
         </div>
-        <p class="loader__tagline" id="loaderTagline">Esteticista &amp; Cosmetóloga</p>
     </div>
 
     <!-- ── Mobile Menu Overlay ──────────────────── -->
@@ -1054,6 +1077,7 @@
     <section class="hero" id="hero">
 
         <div class="hero__ambient" aria-hidden="true">
+            <canvas id="heroCanvas"></canvas>
             <div class="ripple ripple--1"></div>
             <div class="ripple ripple--2"></div>
             <div class="ripple ripple--3"></div>
@@ -1298,21 +1322,54 @@
         }
 
         /* Fallback: garante que o conteúdo aparece mesmo se o loader travar */
-        const loaderFallback = setTimeout(safeStartHero, 4500);
+        const loaderFallback = setTimeout(safeStartHero, 5500);
 
-        /* Loader sempre animado via GSAP — independente de prefers-reduced-motion
-           (experiência de marca, não animação funcional) */
-        gsap.timeline({
-            onComplete() {
-                clearTimeout(loaderFallback);
-                document.getElementById('loader').style.pointerEvents = 'none';
-                safeStartHero();
+        /* Loader — blob dourado morfante, sempre via GSAP */
+        (function () {
+            const blob = document.getElementById('loaderBlob');
+            const morphShapes = [
+                '60% 40% 30% 70% / 60% 30% 70% 40%',
+                '30% 60% 70% 40% / 50% 60% 30% 60%',
+                '50% 30% 60% 40% / 30% 70% 40% 60%',
+                '40% 60% 30% 60% / 60% 40% 70% 30%',
+                '35% 65% 55% 45% / 55% 35% 65% 45%',
+                '55% 45% 40% 60% / 40% 60% 35% 65%',
+            ];
+            let morphIdx = 0;
+            let morphTween = null;
+
+            function morphNext() {
+                morphIdx = (morphIdx + 1) % morphShapes.length;
+                morphTween = gsap.to(blob, {
+                    borderRadius: morphShapes[morphIdx],
+                    duration: 1.8 + Math.random() * 0.8,
+                    ease: 'sine.inOut',
+                    onComplete: morphNext
+                });
             }
-        })
-        .to('#loaderWordmark', { opacity: 1, duration: 0.9, ease: 'power2.out' })
-        .to('#loaderBar',      { width: '100%', duration: 0.9, ease: 'power2.inOut' }, '-=0.4')
-        .to('#loaderTagline',  { opacity: 1, duration: 0.6, ease: 'power2.out' }, '-=0.2')
-        .to('#loader',         { yPercent: -100, duration: 1.05, ease: 'power4.inOut', delay: 0.4 });
+
+            gsap.timeline({
+                onComplete() {
+                    clearTimeout(loaderFallback);
+                    if (morphTween) morphTween.kill();
+                    document.getElementById('loader').style.pointerEvents = 'none';
+                    safeStartHero();
+                }
+            })
+            /* Blob cresce do zero */
+            .set(blob, { scale: 0.05, opacity: 0, borderRadius: morphShapes[0] })
+            .to(blob,  { scale: 1, opacity: 1, duration: 0.95, ease: 'power3.out' })
+            /* Inicia morphing contínuo */
+            .call(morphNext)
+            /* Texto surge sobre o blob */
+            .to('#loaderWordmark', { opacity: 1, duration: 0.75, ease: 'power2.out' }, '-=0.5')
+            .to('#loaderTagline',  { opacity: 1, duration: 0.55, ease: 'power2.out' }, '-=0.1')
+            /* Pulso suave antes de sair */
+            .to(blob, { scale: 1.12, duration: 0.6, ease: 'power2.inOut' }, '+=0.55')
+            .to(blob, { scale: 1.0,  duration: 0.4, ease: 'power2.inOut' })
+            /* Loader desliza para cima */
+            .to('#loader', { yPercent: -100, duration: 1.0, ease: 'power4.inOut', delay: 0.15 });
+        })();
 
         /* ── Hero — Animações de entrada ───────────── */
         function startHero() {
@@ -1430,6 +1487,105 @@
                     onComplete: pulse
                 });
             });
+        })();
+
+        /* ── Hero canvas — blob fluido reativo ao mouse ── */
+        (function () {
+            const canvas = document.getElementById('heroCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            let W = 0, H = 0;
+            function resize() {
+                W = canvas.width  = canvas.offsetWidth;
+                H = canvas.height = canvas.offsetHeight;
+            }
+            resize();
+            window.addEventListener('resize', resize, { passive: true });
+
+            /* Centro do blob (posição normalizada) — área esquerda do hero */
+            let cx = 0.26, cy = 0.50;
+            let tcx = cx, tcy = cy;
+
+            /* Parâmetros de cada ponto de controle */
+            const N = 8;
+            const pointCfg = Array.from({ length: N }, (_, i) => ({
+                angle:  (i / N) * Math.PI * 2,
+                speed:  0.00028 + i * 0.000035,
+                phase:  i * 0.78,
+                radMod: 0.82 + (i % 3) * 0.09,
+            }));
+
+            function lerp(a, b, t) { return a + (b - a) * t; }
+
+            /* Atualiza centro ao mover o mouse dentro do hero */
+            const heroEl = document.getElementById('hero');
+            document.addEventListener('mousemove', e => {
+                if (!heroEl) return;
+                const rect = heroEl.getBoundingClientRect();
+                if (e.clientY < rect.top || e.clientY > rect.bottom) return;
+                const mx = (e.clientX - rect.left) / rect.width;
+                const my = (e.clientY - rect.top)  / rect.height;
+                /* Segue o mouse mas fica ancorado na metade esquerda */
+                tcx = 0.26 + (mx - 0.5) * 0.16;
+                tcy = 0.50 + (my - 0.5) * 0.12;
+            }, { passive: true });
+
+            function loop(t) {
+                requestAnimationFrame(loop);
+
+                /* Suaviza movimento do centro */
+                cx = lerp(cx, tcx, 0.035);
+                cy = lerp(cy, tcy, 0.035);
+
+                ctx.clearRect(0, 0, W, H);
+
+                const minD  = Math.min(W, H);
+                const baseR = minD * 0.24;
+
+                /* Calcula pontos do blob */
+                const pts = pointCfg.map(p => {
+                    const r = baseR * p.radMod *
+                        (0.82 + 0.18 * Math.sin(t * p.speed + p.phase));
+                    const a = p.angle +
+                        t * 0.00018 +
+                        Math.sin(t * 0.00045 + p.phase) * 0.12;
+                    return {
+                        x: cx * W + Math.cos(a) * r,
+                        y: cy * H + Math.sin(a) * r,
+                    };
+                });
+
+                /* Caminho suave — quadratic bezier pelos pontos médios */
+                ctx.beginPath();
+                const mid0x = (pts[N - 1].x + pts[0].x) / 2;
+                const mid0y = (pts[N - 1].y + pts[0].y) / 2;
+                ctx.moveTo(mid0x, mid0y);
+                for (let i = 0; i < N; i++) {
+                    const curr = pts[i];
+                    const next = pts[(i + 1) % N];
+                    ctx.quadraticCurveTo(
+                        curr.x, curr.y,
+                        (curr.x + next.x) / 2,
+                        (curr.y + next.y) / 2
+                    );
+                }
+                ctx.closePath();
+
+                /* Gradiente dourado radial */
+                const grd = ctx.createRadialGradient(
+                    cx * W, cy * H, 0,
+                    cx * W, cy * H, baseR * 1.35
+                );
+                grd.addColorStop(0,   'rgba(220, 190, 120, 0.18)');
+                grd.addColorStop(0.5, 'rgba(197, 160,  89, 0.10)');
+                grd.addColorStop(1,   'rgba(197, 160,  89, 0.00)');
+
+                ctx.fillStyle = grd;
+                ctx.fill();
+            }
+
+            requestAnimationFrame(loop);
         })();
 
         /* ══════════════════════════════════════════
