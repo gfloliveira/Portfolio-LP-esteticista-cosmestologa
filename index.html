@@ -1301,9 +1301,11 @@
         const loaderFallback = setTimeout(safeStartHero, 4500);
 
         if (reducedMo) {
-            /* Sem animações: tudo visível imediatamente */
-            clearTimeout(loaderFallback);
-            safeStartHero();
+            /* Sem animações mas loader ainda aparece brevemente */
+            document.getElementById('loaderWordmark').style.opacity = '1';
+            document.getElementById('loaderBar').style.width      = '100%';
+            document.getElementById('loaderTagline').style.opacity = '1';
+            setTimeout(() => { clearTimeout(loaderFallback); safeStartHero(); }, 1200);
         } else {
             gsap.timeline({
                 onComplete() {
