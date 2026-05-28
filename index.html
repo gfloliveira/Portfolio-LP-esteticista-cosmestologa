@@ -750,6 +750,250 @@
 
             .scroll-hint { display: none; }
         }
+
+        /* ═══════════════════════════════════════════
+           SOBRE — SECTION 2
+        ═══════════════════════════════════════════ */
+        .sobre {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+            overflow: hidden;
+            background: var(--color-bg); /* fallback se WebGL falhar */
+        }
+
+        #sobreCanvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            display: block;
+        }
+
+        /* Funde o topo com o hero — degradê cream → transparente */
+        .sobre__fade-top {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 200px;
+            background: linear-gradient(to bottom, var(--color-bg) 0%, transparent 100%);
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .sobre__inner {
+            position: relative;
+            z-index: 2;
+            display: grid;
+            grid-template-columns: 1fr 40%;
+            min-height: 100vh;
+            align-items: stretch;
+        }
+
+        /* ── Coluna de texto ── */
+        .sobre__text-col {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 160px 64px 120px 96px;
+        }
+
+        .sobre__eyebrow {
+            font-family: var(--font-sans);
+            font-size: 0.62rem;
+            font-weight: 400;
+            letter-spacing: 0.40em;
+            text-transform: uppercase;
+            color: var(--color-primary-gold);
+            margin-bottom: 26px;
+            will-change: transform, opacity;
+        }
+
+        .sobre__title {
+            font-family: var(--font-serif);
+            font-size: clamp(2.6rem, 4.2vw, 4.0rem);
+            font-weight: 300;
+            line-height: 1.13;
+            color: var(--color-text-dark);
+            margin: 0 0 40px;
+            letter-spacing: -0.01em;
+        }
+
+        .sobre__title em {
+            font-style: italic;
+            color: var(--color-primary-gold);
+        }
+
+        .sobre__title-line {
+            display: block;
+            overflow: hidden;
+            padding-bottom: 0.06em;
+        }
+
+        .sobre__title-inner {
+            display: block;
+            will-change: transform;
+        }
+
+        .sobre__divider {
+            width: 0;
+            height: 1px;
+            background: linear-gradient(to right, var(--color-primary-gold), transparent);
+            margin-bottom: 36px;
+            opacity: 0.8;
+        }
+
+        .sobre__quote {
+            font-family: var(--font-serif);
+            font-size: clamp(1.05rem, 1.5vw, 1.2rem);
+            font-weight: 300;
+            font-style: italic;
+            line-height: 1.75;
+            color: rgba(42, 34, 24, 0.85);
+            border: none;
+            padding: 0;
+            margin: 0 0 28px;
+            will-change: opacity, transform;
+        }
+
+        .sobre__bio {
+            font-family: var(--font-sans);
+            font-size: 0.91rem;
+            font-weight: 300;
+            line-height: 1.88;
+            color: rgba(42, 34, 24, 0.70);
+            max-width: 460px;
+            margin: 0 0 60px;
+            will-change: opacity, transform;
+        }
+
+        .sobre__stats {
+            display: flex;
+            gap: 48px;
+            align-items: flex-end;
+        }
+
+        .sobre__stat {
+            display: flex;
+            flex-direction: column;
+            will-change: opacity, transform;
+        }
+
+        .sobre__stat-top {
+            display: flex;
+            align-items: baseline;
+            gap: 2px;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .sobre__stat-num {
+            font-family: var(--font-serif);
+            font-size: 2.5rem;
+            font-weight: 300;
+            color: var(--color-primary-gold);
+            line-height: 1;
+            display: inline-block;
+            min-width: 2ch;
+        }
+
+        .sobre__stat-suffix {
+            font-family: var(--font-serif);
+            font-size: 1.6rem;
+            font-weight: 300;
+            color: var(--color-gold-light);
+            line-height: 1;
+        }
+
+        .sobre__stat-label {
+            font-family: var(--font-sans);
+            font-size: 0.58rem;
+            font-weight: 400;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: rgba(42, 34, 24, 0.45);
+        }
+
+        /* ── Coluna da foto ── */
+        .sobre__photo-col {
+            position: relative;
+            overflow: hidden;
+            min-height: 100vh;
+        }
+
+        /* Degrade no topo da foto para fundir com hero */
+        .sobre__photo-col::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 220px;
+            background: linear-gradient(to bottom, var(--color-bg) 0%, transparent 100%);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* Sombra na borda esquerda da foto — funde com a coluna de texto */
+        .sobre__photo-col::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to right, rgba(250,249,246,0.50) 0%, transparent 25%);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .sobre__photo {
+            width: 100%;
+            height: 100%;
+            min-height: 100vh;
+            object-fit: cover;
+            object-position: center 15%;
+            display: block;
+            will-change: opacity, transform;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 1024px) {
+            .sobre__inner {
+                grid-template-columns: 1fr 44%;
+            }
+            .sobre__text-col {
+                padding: 140px 44px 100px 56px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sobre__inner {
+                grid-template-columns: 1fr;
+            }
+            .sobre__photo-col {
+                height: 62vh;
+                min-height: unset;
+                order: -1;
+            }
+            .sobre__photo {
+                min-height: unset;
+                height: 100%;
+            }
+            .sobre__text-col {
+                padding: 52px 28px 80px;
+                order: 1;
+            }
+            .sobre__title {
+                font-size: clamp(2.0rem, 8vw, 2.8rem);
+            }
+            .sobre__stats {
+                gap: 24px;
+                flex-wrap: wrap;
+            }
+            .sobre__stat-num {
+                font-size: 2.0rem;
+            }
+            .sobre__fade-top {
+                height: 120px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -766,6 +1010,8 @@
 
     <!-- ── Mobile Menu Overlay ──────────────────── -->
     <div class="mobile-menu" id="mobileMenu" role="dialog" aria-modal="true" aria-label="Menu de navegação">
+        <a href="#sobre">Sobre</a>
+        <div class="mobile-menu__rule"></div>
         <a href="#tratamentos">Tratamentos</a>
         <div class="mobile-menu__rule"></div>
         <a href="#resultados">Resultados</a>
@@ -779,6 +1025,7 @@
             <span>A·</span>Esteticista
         </a>
         <ul class="nav__menu" id="navMenu">
+            <li><a href="#sobre">Sobre</a></li>
             <li><a href="#tratamentos">Tratamentos</a></li>
             <li><a href="#resultados">Resultados</a></li>
             <li><a href="#contato">Contato</a></li>
@@ -881,6 +1128,87 @@
 
     </section>
 
+
+    <!-- ── Sobre ─────────────────────────────────── -->
+    <section class="sobre" id="sobre">
+        <canvas id="sobreCanvas" aria-hidden="true"></canvas>
+        <div class="sobre__fade-top" aria-hidden="true"></div>
+
+        <div class="sobre__inner">
+
+            <!-- Coluna de texto -->
+            <div class="sobre__text-col">
+
+                <p class="sobre__eyebrow" id="sobreEyebrow">Quem é Laís</p>
+
+                <h2 class="sobre__title">
+                    <span class="sobre__title-line">
+                        <span class="sobre__title-inner" id="stl1">Beleza que</span>
+                    </span>
+                    <span class="sobre__title-line">
+                        <span class="sobre__title-inner" id="stl2">nasce da</span>
+                    </span>
+                    <span class="sobre__title-line">
+                        <span class="sobre__title-inner" id="stl3"><em>sua</em> essência.</span>
+                    </span>
+                </h2>
+
+                <div class="sobre__divider" id="sobreDivider"></div>
+
+                <blockquote class="sobre__quote" id="sobreQuote">
+                    "Cada pele conta uma história única. Minha missão é
+                    ajudá-la a revelar o seu melhor capítulo."
+                </blockquote>
+
+                <p class="sobre__bio" id="sobreBio">
+                    Com formação em Estética e Cosmetologia e especialização em
+                    protocolos avançados, Laís Nayélli dedica‑se à arte de cuidar
+                    com intenção. Cada atendimento é uma experiência sensorial
+                    personalizada — porque você merece mais do que um tratamento;
+                    você merece uma transformação real.
+                </p>
+
+                <div class="sobre__stats" id="sobreStats">
+                    <div class="sobre__stat">
+                        <div class="sobre__stat-top">
+                            <span class="sobre__stat-num" data-target="500">0</span>
+                            <span class="sobre__stat-suffix">+</span>
+                        </div>
+                        <span class="sobre__stat-label">Clientes atendidas</span>
+                    </div>
+                    <div class="sobre__stat">
+                        <div class="sobre__stat-top">
+                            <span class="sobre__stat-num" data-target="5">0</span>
+                            <span class="sobre__stat-suffix">+</span>
+                        </div>
+                        <span class="sobre__stat-label">Anos de experiência</span>
+                    </div>
+                    <div class="sobre__stat">
+                        <div class="sobre__stat-top">
+                            <span class="sobre__stat-num" data-target="15">0</span>
+                            <span class="sobre__stat-suffix">+</span>
+                        </div>
+                        <span class="sobre__stat-label">Protocolos exclusivos</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Coluna da foto — sangra até a borda direita -->
+            <div class="sobre__photo-col" id="sobrePhotoCol">
+                <img
+                    class="sobre__photo"
+                    id="sobrePhoto"
+                    src="assets/photo-portrait.jpg"
+                    alt="Laís Nayélli, Esteticista e Cosmetóloga, em seu espaço de atendimento"
+                    loading="lazy"
+                    width="800"
+                    height="1200"
+                >
+            </div>
+
+        </div>
+    </section>
 
 
     <!-- ── Scripts ──────────────────────────────── -->
@@ -1181,6 +1509,206 @@
                 pxY(yR *  8);
             });
         }
+
+        /* ══════════════════════════════════════════
+           WebGL Ouro Vivo — Sobre section
+           FBM domain warping — textura orgânica quente
+        ══════════════════════════════════════════ */
+        (function () {
+            const canvas  = document.getElementById('sobreCanvas');
+            const sobreEl = document.getElementById('sobre');
+            if (!canvas || !sobreEl || typeof THREE === 'undefined') return;
+
+            const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: false });
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+
+            function sizeRenderer() {
+                renderer.setSize(
+                    canvas.offsetWidth  || window.innerWidth,
+                    canvas.offsetHeight || sobreEl.offsetHeight || window.innerHeight
+                );
+            }
+            /* Aguarda layout para dimensionar corretamente */
+            requestAnimationFrame(sizeRenderer);
+
+            const scene  = new THREE.Scene();
+            const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+
+            const uniforms = {
+                uTime:  { value: 0.0 },
+                uMouse: { value: new THREE.Vector2(0.5, 0.5) },
+            };
+
+            const mat = new THREE.ShaderMaterial({
+                uniforms,
+                vertexShader: `
+                    varying vec2 vUv;
+                    void main() {
+                        vUv = uv;
+                        gl_Position = vec4(position, 1.0);
+                    }
+                `,
+                fragmentShader: `
+                    precision mediump float;
+                    varying vec2 vUv;
+                    uniform float uTime;
+                    uniform vec2  uMouse;
+
+                    float hash(vec2 p) {
+                        p = fract(p * vec2(234.34, 435.345));
+                        p += dot(p, p + 34.23);
+                        return fract(p.x * p.y);
+                    }
+
+                    float vnoise(vec2 p) {
+                        vec2 i = floor(p);
+                        vec2 f = fract(p);
+                        vec2 u = f * f * (3.0 - 2.0 * f);
+                        return mix(
+                            mix(hash(i),               hash(i + vec2(1.0, 0.0)), u.x),
+                            mix(hash(i + vec2(0.0,1.0)), hash(i + vec2(1.0,1.0)), u.x),
+                            u.y
+                        );
+                    }
+
+                    /* FBM 5 oitavas — rotação 30° elimina eixos preferenciais */
+                    float fbm(vec2 p) {
+                        float v = 0.0, a = 0.5;
+                        mat2 m = mat2(0.866, 0.5, -0.5, 0.866);
+                        for (int i = 0; i < 5; i++) {
+                            v += a * vnoise(p);
+                            p  = m * p * 2.1 + vec2(100.0);
+                            a *= 0.5;
+                        }
+                        return v;
+                    }
+
+                    void main() {
+                        vec2 uv = vUv;
+                        float T = uTime * 0.062; /* muito lento — textura viva */
+
+                        /* Domain warping duplo: Q → R → F */
+                        vec2 q = vec2(
+                            fbm(uv * 2.8 + T * 0.9),
+                            fbm(uv * 2.8 + vec2(5.2, 1.3) + T * 0.7)
+                        );
+                        vec2 r = vec2(
+                            fbm(uv * 2.2 + 3.6 * q + vec2(1.7, 9.2) + T * 0.5),
+                            fbm(uv * 2.2 + 3.6 * q + vec2(8.3, 2.8) + T * 0.42)
+                        );
+                        float f = fbm(uv * 1.8 + 4.2 * r + T * 0.3);
+
+                        /* Veias: abs(FBM) cria cristas orgânicas (pele / seda) */
+                        float vein = 1.0 - abs(fbm(uv * 4.8 + r * 2.0 + T * 0.6) * 2.0 - 1.0);
+                        vein = pow(max(vein, 0.0), 2.2) * 0.25;
+                        f = clamp(f * 0.88 + vein, 0.0, 1.0);
+
+                        /* Bloom dourado ao redor do cursor */
+                        float mdist = length(uv - uMouse);
+                        f += exp(-mdist * mdist * 5.5) * 0.16;
+                        f  = clamp(f, 0.0, 1.0);
+
+                        /* Paleta 5-stops — cream → creme quente → bege → ouro claro → ouro */
+                        vec3 c0 = vec3(0.980, 0.976, 0.965); /* #FAF9F6 cream     */
+                        vec3 c1 = vec3(0.970, 0.952, 0.920); /* creme quente      */
+                        vec3 c2 = vec3(0.945, 0.895, 0.785); /* bege dourado      */
+                        vec3 c3 = vec3(0.893, 0.803, 0.568); /* ouro claro        */
+                        vec3 c4 = vec3(0.773, 0.627, 0.349); /* #C5A059 ouro      */
+
+                        vec3 col = mix(c0, c1, smoothstep(0.00, 0.28, f));
+                        col = mix(col, c2, smoothstep(0.26, 0.52, f));
+                        col = mix(col, c3, smoothstep(0.50, 0.76, f));
+                        col = mix(col, c4, smoothstep(0.74, 1.00, f));
+
+                        /* Vinheta suave */
+                        float vign = 1.0 - dot(vUv - 0.5, vUv - 0.5) * 0.30;
+                        col *= clamp(vign, 0.82, 1.0);
+
+                        gl_FragColor = vec4(col, 1.0);
+                    }
+                `,
+            });
+
+            scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), mat));
+
+            /* Mouse — coordenadas relativas à seção sobre */
+            document.addEventListener('mousemove', e => {
+                const r = sobreEl.getBoundingClientRect();
+                if (e.clientY < r.top - 150 || e.clientY > r.bottom + 150) return;
+                uniforms.uMouse.value.set(
+                    (e.clientX - r.left) / r.width,
+                    1.0 - (e.clientY - r.top) / r.height
+                );
+            }, { passive: true });
+
+            window.addEventListener('resize', sizeRenderer, { passive: true });
+
+            /* IntersectionObserver — pausa GPU quando fora de tela */
+            let sobreVisible = false;
+            new IntersectionObserver(
+                ([entry]) => { sobreVisible = entry.isIntersecting; },
+                { rootMargin: '150px' }
+            ).observe(sobreEl);
+
+            /* Ticker GSAP compartilhado */
+            gsap.ticker.add(time => {
+                if (!sobreVisible) return;
+                uniforms.uTime.value = time;
+                renderer.render(scene, camera);
+            });
+        })();
+
+        /* ── Sobre: animações de entrada (ScrollTrigger) ── */
+        (function () {
+            const sobre = document.getElementById('sobre');
+            if (!sobre) return;
+
+            /* Estados iniciais */
+            gsap.set('#sobreEyebrow',       { opacity: 0, x: -20 });
+            gsap.set('.sobre__title-inner', { y: '106%' });
+            gsap.set('#sobreDivider',       { width: 0 });
+            gsap.set('#sobreQuote',         { opacity: 0, y: 18 });
+            gsap.set('#sobreBio',           { opacity: 0, y: 18 });
+            gsap.set('.sobre__stat',        { opacity: 0, y: 22 });
+            gsap.set('#sobrePhoto',         { opacity: 0, scale: 1.06 });
+
+            const tl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: sobre,
+                    start: 'top 72%',
+                    toggleActions: 'play none none none',
+                },
+                defaults: { ease: 'power4.out' },
+            });
+
+            tl
+            .to('#sobreEyebrow',       { opacity: 1, x: 0,     duration: 0.9 },               0.00)
+            .to('.sobre__title-inner', { y: '0%',               duration: 1.4, stagger: 0.12 }, 0.18)
+            .to('#sobreDivider',       { width: 88,             duration: 1.0 },               0.62)
+            .to('#sobreQuote',         { opacity: 1, y: 0,      duration: 1.0 },               0.76)
+            .to('#sobreBio',           { opacity: 1, y: 0,      duration: 1.0 },               0.94)
+            .to('.sobre__stat',        { opacity: 1, y: 0,      duration: 0.7, stagger: 0.12 }, 1.10)
+            .to('#sobrePhoto',         { opacity: 1, scale: 1.0, duration: 2.2, ease: 'power2.out' }, 0.05);
+
+            /* Contadores numéricos */
+            document.querySelectorAll('.sobre__stat-num').forEach((el, i) => {
+                const target = parseInt(el.dataset.target, 10);
+                const obj    = { val: 0 };
+                gsap.to(obj, {
+                    val: target,
+                    duration: 2.0,
+                    ease: 'power2.out',
+                    delay: i * 0.14,
+                    snap: { val: 1 },
+                    scrollTrigger: {
+                        trigger: '#sobreStats',
+                        start: 'top 82%',
+                        once: true,
+                    },
+                    onUpdate() { el.textContent = Math.round(obj.val); },
+                });
+            });
+        })();
 
         /* ── Ripple — ondas douradas via GSAP (não depende de prefers-reduced-motion) ── */
         (function () {
