@@ -50,11 +50,18 @@
         html { font-size: 16px; }
 
         body {
-            background-color: var(--color-bg);
+            background: transparent; /* WebGL canvas #bgCanvas fornece o fundo */
             color: var(--color-text-dark);
             font-family: var(--font-sans);
             font-weight: 300;
             overflow-x: hidden;
+        }
+
+        /* Painéis com fundo sólido — se empilham sobre o hero à medida que rolam */
+        #sobre {
+            background: var(--color-bg);
+            position: relative;
+            box-shadow: 0 -16px 60px rgba(0, 0, 0, 0.07), 0 -1px 0 rgba(197, 160, 89, 0.14);
         }
 
         /* Cursor padrão do sistema em todos os dispositivos */
@@ -62,72 +69,66 @@
         /* =============================================
            Loader
         ============================================= */
+        /* WebGL silk — canvas fixo atrás de tudo */
+        #bgCanvas {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            display: block;
+        }
+
         .loader {
             position: fixed;
             inset: 0;
-            background: var(--color-bg);
+            background: rgba(250, 249, 246, 0.94);
             z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        .loader__blob {
-            position: absolute;
-            width: 240px;
-            height: 240px;
-            background: radial-gradient(
-                ellipse at 38% 42%,
-                #E8CC88 0%,
-                var(--color-primary-gold) 50%,
-                #8B6B1A 100%
-            );
-            border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
-            opacity: 0;
-            box-shadow:
-                0 0 60px rgba(197, 160, 89, 0.35),
-                0 0 120px rgba(197, 160, 89, 0.15);
-        }
-
-        .loader__text {
-            position: relative;
-            z-index: 2;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 14px;
-            pointer-events: none;
+            justify-content: center;
+            gap: 26px;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+        }
+
+        .loader__wordmark-wrap {
+            overflow: hidden;
+            padding-bottom: 0.08em; /* espaço para descendentes */
         }
 
         .loader__wordmark {
+            display: block;
             font-family: var(--font-serif);
-            font-size: 1.3rem;
+            font-size: 1.7rem;
             font-weight: 300;
             letter-spacing: 0.5em;
             text-transform: uppercase;
-            color: #fff;
-            text-shadow: 0 1px 12px rgba(100, 60, 0, 0.3);
-            opacity: 0;
+            color: var(--color-text-dark);
+            transform: translateY(110%);
+        }
+
+        .loader__rule {
+            width: 0px;
+            height: 1px;
+            background: linear-gradient(
+                to right,
+                transparent 0%,
+                var(--color-primary-gold) 50%,
+                transparent 100%
+            );
         }
 
         .loader__tagline {
             font-family: var(--font-sans);
             font-size: 0.58rem;
             font-weight: 300;
-            letter-spacing: 0.34em;
+            letter-spacing: 0.36em;
             text-transform: uppercase;
-            color: rgba(255, 255, 255, 0.82);
+            color: var(--color-primary-gold);
             opacity: 0;
-        }
-
-        /* Canvas blob no hero */
-        #heroCanvas {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
         }
 
         /* =============================================
@@ -260,16 +261,21 @@
             display: flex;
             align-items: center;
             overflow: hidden;
-            background: var(--color-bg);
+            background: transparent; /* WebGL silk mostra por baixo */
         }
 
-        /* Hero ambient — ondas douradas expansivas */
+        /* Hero ambient — camada extra muito suave sobre a seda WebGL */
         .hero__ambient {
             position: absolute;
             inset: 0;
             z-index: 1;
-            background: linear-gradient(160deg, #FDFCF9 0%, #FAF8F3 55%, #F6F2EB 100%);
-            transform: translateZ(0); /* força layer de composição próprio */
+            background: linear-gradient(
+                160deg,
+                rgba(253, 252, 249, 0.30) 0%,
+                rgba(250, 248, 243, 0.15) 55%,
+                rgba(246, 242, 235, 0.20) 100%
+            );
+            transform: translateZ(0);
         }
 
         .ripple {
@@ -1034,13 +1040,16 @@
 <body>
 
 
+    <!-- ── WebGL background ──────────────────────── -->
+    <canvas id="bgCanvas" aria-hidden="true"></canvas>
+
     <!-- ── Loader ───────────────────────────────── -->
     <div class="loader" id="loader">
-        <div class="loader__blob" id="loaderBlob"></div>
-        <div class="loader__text">
-            <div class="loader__wordmark" id="loaderWordmark">Laís Nayélli</div>
-            <p class="loader__tagline" id="loaderTagline">Esteticista &amp; Cosmetóloga</p>
+        <div class="loader__wordmark-wrap">
+            <span class="loader__wordmark" id="loaderWordmark">Laís Nayélli</span>
         </div>
+        <div class="loader__rule" id="loaderRule"></div>
+        <p class="loader__tagline" id="loaderTagline">Esteticista &amp; Cosmetóloga</p>
     </div>
 
     <!-- ── Mobile Menu Overlay ──────────────────── -->
@@ -1077,7 +1086,6 @@
     <section class="hero" id="hero">
 
         <div class="hero__ambient" aria-hidden="true">
-            <canvas id="heroCanvas"></canvas>
             <div class="ripple ripple--1"></div>
             <div class="ripple ripple--2"></div>
             <div class="ripple ripple--3"></div>
@@ -1242,6 +1250,7 @@
 
 
     <!-- ── Scripts ──────────────────────────────── -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
@@ -1249,13 +1258,124 @@
     <script>
         gsap.registerPlugin(ScrollTrigger);
 
+        /* ══════════════════════════════════════════
+           WebGL Silk Background — Three.js shader
+        ══════════════════════════════════════════ */
+        (function () {
+            const canvas = document.getElementById('bgCanvas');
+            if (!canvas || typeof THREE === 'undefined') return;
+
+            const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: false });
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.8));
+            renderer.setSize(window.innerWidth, window.innerHeight);
+
+            const scene  = new THREE.Scene();
+            const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+
+            const uniforms = {
+                uTime:   { value: 0.0 },
+                uMouse:  { value: new THREE.Vector2(0.5, 0.5) },
+                uScroll: { value: 0.0 },
+            };
+
+            const mat = new THREE.ShaderMaterial({
+                uniforms,
+                vertexShader: `
+                    varying vec2 vUv;
+                    void main() {
+                        vUv = uv;
+                        gl_Position = vec4(position, 1.0);
+                    }
+                `,
+                fragmentShader: `
+                    precision highp float;
+                    varying vec2 vUv;
+                    uniform float uTime;
+                    uniform vec2  uMouse;
+                    uniform float uScroll;
+
+                    float wave(vec2 p, float freq, float spd, float ph) {
+                        return sin(p.x * freq + uTime * spd + ph) *
+                               cos(p.y * freq * 0.65 + uTime * spd * 0.75 + ph * 1.35);
+                    }
+
+                    void main() {
+                        vec2 uv = vUv;
+
+                        /* Distorção sutil ao redor do mouse */
+                        vec2 m = uMouse * 2.0 - 1.0;
+                        float d = length(uv * 2.0 - 1.0 - m * 0.6);
+                        uv += m * 0.006 * (1.0 - smoothstep(0.0, 1.8, d));
+
+                        /* 5 ondas sobrepostas — efeito seda */
+                        float w  = wave(uv, 2.8, 0.18, 0.00) * 0.30
+                                 + wave(uv, 5.1, 0.13, 1.57) * 0.22
+                                 + wave(uv, 3.6, 0.09, 3.14) * 0.22
+                                 + wave(uv, 7.8, 0.22, 0.78) * 0.14
+                                 + wave(uv, 1.9, 0.07, 2.35) * 0.12;
+                        w = w * 0.5 + 0.5;
+
+                        /* Paleta: off-white → creme quente → ouro */
+                        vec3 cBase  = vec3(0.980, 0.976, 0.965); /* #FAF9F6 */
+                        vec3 cCream = vec3(0.960, 0.938, 0.895); /* creme */
+                        vec3 cGoldL = vec3(0.906, 0.816, 0.565); /* ouro claro */
+                        vec3 cGold  = vec3(0.773, 0.627, 0.349); /* #C5A059 */
+
+                        vec3 col = cBase;
+                        col = mix(col, cCream, w * 1.85);
+                        col = mix(col, cGoldL, max(0.0, w * 2.5 - 1.15) * 0.50);
+                        col = mix(col, cGold,  max(0.0, w * 3.2 - 2.10) * 0.28);
+
+                        /* Mais ouro conforme desce na página */
+                        col = mix(col, cGoldL, uScroll * 0.10 * w);
+
+                        /* Vinheta suave nas bordas */
+                        float v = 1.0 - length((vUv - 0.5) * 1.3) * 0.12;
+                        col *= v;
+
+                        gl_FragColor = vec4(col, 1.0);
+                    }
+                `,
+            });
+
+            scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), mat));
+
+            /* Resize */
+            function onResize() {
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+            window.addEventListener('resize', onResize, { passive: true });
+
+            /* Mouse */
+            document.addEventListener('mousemove', e => {
+                uniforms.uMouse.value.set(
+                    e.clientX / window.innerWidth,
+                    1.0 - e.clientY / window.innerHeight
+                );
+            }, { passive: true });
+
+            /* Scroll progress */
+            function updateScroll() {
+                const max = document.body.scrollHeight - window.innerHeight;
+                uniforms.uScroll.value = max > 0 ? window.scrollY / max : 0;
+            }
+            window.addEventListener('scroll', updateScroll, { passive: true });
+
+            /* Integra com o ticker do GSAP (já tem rAF ativo)
+               1º arg = tempo total em segundos desde o início do GSAP */
+            gsap.ticker.add(time => {
+                uniforms.uTime.value = time * 0.45; /* escala: seda lenta e suave */
+                renderer.render(scene, camera);
+            });
+        })();
+
         /* ── Detecção de ambiente ──────────────────── */
         const isTouch   = window.matchMedia('(hover: none)').matches;
         const isMobile  = window.matchMedia('(max-width: 768px)').matches;
         const reducedMo = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
         /* ── Estados GSAP iniciais ─────────────────── */
-        /* Controlamos tudo via GSAP — sem conflito com CSS transform */
+        gsap.set('#loaderTagline', { y: 10 }); /* para o y:0 da timeline do loader */
         gsap.set('#navLogo, #navMenu, #navBurger', { opacity: 0, y: -10 });
         gsap.set('#heroEyebrow, #heroSubtitle, #heroCta', { opacity: 0, y: 16 });
         gsap.set('#heroImageCol, #scrollHint, #sideBadge', { opacity: 0 });
@@ -1322,54 +1442,28 @@
         }
 
         /* Fallback: garante que o conteúdo aparece mesmo se o loader travar */
-        const loaderFallback = setTimeout(safeStartHero, 5500);
+        const loaderFallback = setTimeout(safeStartHero, 5000);
 
-        /* Loader — blob dourado morfante, sempre via GSAP */
-        (function () {
-            const blob = document.getElementById('loaderBlob');
-            const morphShapes = [
-                '60% 40% 30% 70% / 60% 30% 70% 40%',
-                '30% 60% 70% 40% / 50% 60% 30% 60%',
-                '50% 30% 60% 40% / 30% 70% 40% 60%',
-                '40% 60% 30% 60% / 60% 40% 70% 30%',
-                '35% 65% 55% 45% / 55% 35% 65% 45%',
-                '55% 45% 40% 60% / 40% 60% 35% 65%',
-            ];
-            let morphIdx = 0;
-            let morphTween = null;
-
-            function morphNext() {
-                morphIdx = (morphIdx + 1) % morphShapes.length;
-                morphTween = gsap.to(blob, {
-                    borderRadius: morphShapes[morphIdx],
-                    duration: 1.8 + Math.random() * 0.8,
-                    ease: 'sine.inOut',
-                    onComplete: morphNext
-                });
+        /* Loader — reveal editorial elegante, sempre via GSAP */
+        gsap.timeline({
+            onComplete() {
+                clearTimeout(loaderFallback);
+                document.getElementById('loader').style.pointerEvents = 'none';
+                safeStartHero();
             }
-
-            gsap.timeline({
-                onComplete() {
-                    clearTimeout(loaderFallback);
-                    if (morphTween) morphTween.kill();
-                    document.getElementById('loader').style.pointerEvents = 'none';
-                    safeStartHero();
-                }
-            })
-            /* Blob cresce do zero */
-            .set(blob, { scale: 0.05, opacity: 0, borderRadius: morphShapes[0] })
-            .to(blob,  { scale: 1, opacity: 1, duration: 0.95, ease: 'power3.out' })
-            /* Inicia morphing contínuo */
-            .call(morphNext)
-            /* Texto surge sobre o blob */
-            .to('#loaderWordmark', { opacity: 1, duration: 0.75, ease: 'power2.out' }, '-=0.5')
-            .to('#loaderTagline',  { opacity: 1, duration: 0.55, ease: 'power2.out' }, '-=0.1')
-            /* Pulso suave antes de sair */
-            .to(blob, { scale: 1.12, duration: 0.6, ease: 'power2.inOut' }, '+=0.55')
-            .to(blob, { scale: 1.0,  duration: 0.4, ease: 'power2.inOut' })
-            /* Loader desliza para cima */
-            .to('#loader', { yPercent: -100, duration: 1.0, ease: 'power4.inOut', delay: 0.15 });
-        })();
+        })
+        /* Nome sobe do clip (overflow: hidden no wrapper) */
+        .to('#loaderWordmark', { y: '0%', duration: 1.1, ease: 'power4.out' })
+        /* Linha dourada se expande a partir do centro */
+        .to('#loaderRule', {
+            width: 120, opacity: 1, duration: 0.9, ease: 'power3.out'
+        }, '-=0.5')
+        /* Tagline em ouro surge */
+        .to('#loaderTagline', { opacity: 1, y: 0, duration: 0.7, ease: 'power2.out' }, '-=0.4')
+        /* Pausa para apreciar */
+        .to({}, { duration: 0.7 })
+        /* Loader desliza para cima */
+        .to('#loader', { yPercent: -100, duration: 1.1, ease: 'power4.inOut' });
 
         /* ── Hero — Animações de entrada ───────────── */
         function startHero() {
@@ -1489,104 +1583,26 @@
             });
         })();
 
-        /* ── Hero canvas — blob fluido reativo ao mouse ── */
-        (function () {
-            const canvas = document.getElementById('heroCanvas');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-
-            let W = 0, H = 0;
-            function resize() {
-                W = canvas.width  = canvas.offsetWidth;
-                H = canvas.height = canvas.offsetHeight;
-            }
-            resize();
-            window.addEventListener('resize', resize, { passive: true });
-
-            /* Centro do blob (posição normalizada) — área esquerda do hero */
-            let cx = 0.26, cy = 0.50;
-            let tcx = cx, tcy = cy;
-
-            /* Parâmetros de cada ponto de controle */
-            const N = 8;
-            const pointCfg = Array.from({ length: N }, (_, i) => ({
-                angle:  (i / N) * Math.PI * 2,
-                speed:  0.00028 + i * 0.000035,
-                phase:  i * 0.78,
-                radMod: 0.82 + (i % 3) * 0.09,
-            }));
-
-            function lerp(a, b, t) { return a + (b - a) * t; }
-
-            /* Atualiza centro ao mover o mouse dentro do hero */
-            const heroEl = document.getElementById('hero');
-            document.addEventListener('mousemove', e => {
-                if (!heroEl) return;
-                const rect = heroEl.getBoundingClientRect();
-                if (e.clientY < rect.top || e.clientY > rect.bottom) return;
-                const mx = (e.clientX - rect.left) / rect.width;
-                const my = (e.clientY - rect.top)  / rect.height;
-                /* Segue o mouse mas fica ancorado na metade esquerda */
-                tcx = 0.26 + (mx - 0.5) * 0.16;
-                tcy = 0.50 + (my - 0.5) * 0.12;
-            }, { passive: true });
-
-            function loop(t) {
-                requestAnimationFrame(loop);
-
-                /* Suaviza movimento do centro */
-                cx = lerp(cx, tcx, 0.035);
-                cy = lerp(cy, tcy, 0.035);
-
-                ctx.clearRect(0, 0, W, H);
-
-                const minD  = Math.min(W, H);
-                const baseR = minD * 0.24;
-
-                /* Calcula pontos do blob */
-                const pts = pointCfg.map(p => {
-                    const r = baseR * p.radMod *
-                        (0.82 + 0.18 * Math.sin(t * p.speed + p.phase));
-                    const a = p.angle +
-                        t * 0.00018 +
-                        Math.sin(t * 0.00045 + p.phase) * 0.12;
-                    return {
-                        x: cx * W + Math.cos(a) * r,
-                        y: cy * H + Math.sin(a) * r,
-                    };
-                });
-
-                /* Caminho suave — quadratic bezier pelos pontos médios */
-                ctx.beginPath();
-                const mid0x = (pts[N - 1].x + pts[0].x) / 2;
-                const mid0y = (pts[N - 1].y + pts[0].y) / 2;
-                ctx.moveTo(mid0x, mid0y);
-                for (let i = 0; i < N; i++) {
-                    const curr = pts[i];
-                    const next = pts[(i + 1) % N];
-                    ctx.quadraticCurveTo(
-                        curr.x, curr.y,
-                        (curr.x + next.x) / 2,
-                        (curr.y + next.y) / 2
-                    );
+        /* ══════════════════════════════════════════
+           Transições entre painéis (stacking)
+           Cada seção "levanta" sobre a anterior
+        ══════════════════════════════════════════ */
+        gsap.utils.toArray('section:not(#hero)').forEach(sec => {
+            gsap.fromTo(sec,
+                { y: 50, borderRadius: '20px 20px 0 0' },
+                {
+                    y: 0, borderRadius: '0px 0px 0 0',
+                    ease: 'power3.out',
+                    duration: 1.0,
+                    scrollTrigger: {
+                        trigger: sec,
+                        start: 'top 90%',
+                        end: 'top 25%',
+                        scrub: 0.8,
+                    }
                 }
-                ctx.closePath();
-
-                /* Gradiente dourado radial */
-                const grd = ctx.createRadialGradient(
-                    cx * W, cy * H, 0,
-                    cx * W, cy * H, baseR * 1.35
-                );
-                grd.addColorStop(0,   'rgba(220, 190, 120, 0.18)');
-                grd.addColorStop(0.5, 'rgba(197, 160,  89, 0.10)');
-                grd.addColorStop(1,   'rgba(197, 160,  89, 0.00)');
-
-                ctx.fillStyle = grd;
-                ctx.fill();
-            }
-
-            requestAnimationFrame(loop);
-        })();
+            );
+        });
 
         /* ══════════════════════════════════════════
            Sessão 02 — Sobre: ScrollTrigger animations
