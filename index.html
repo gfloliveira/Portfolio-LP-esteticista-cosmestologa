@@ -1221,7 +1221,8 @@
         gsap.registerPlugin(ScrollTrigger);
 
         /* ══════════════════════════════════════════
-           WebGL Silk Background — Three.js shader
+           WebGL Ouro Vivo — Hero + Sobre compartilham
+           o mesmo shader FBM para continuidade visual
         ══════════════════════════════════════════ */
         (function () {
             const canvas = document.getElementById('bgCanvas');
@@ -1235,9 +1236,8 @@
             const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 
             const uniforms = {
-                uTime:   { value: 0.0 },
-                uMouse:  { value: new THREE.Vector2(0.5, 0.5) },
-                uScroll: { value: 0.0 },
+                uTime:  { value: 0.0 },
+                uMouse: { value: new THREE.Vector2(0.5, 0.5) },
             };
 
             const mat = new THREE.ShaderMaterial({
@@ -1250,50 +1250,74 @@
                     }
                 `,
                 fragmentShader: `
-                    precision highp float;
+                    precision mediump float;
                     varying vec2 vUv;
                     uniform float uTime;
                     uniform vec2  uMouse;
-                    uniform float uScroll;
 
-                    float wave(vec2 p, float freq, float spd, float ph) {
-                        return sin(p.x * freq + uTime * spd + ph) *
-                               cos(p.y * freq * 0.65 + uTime * spd * 0.75 + ph * 1.35);
+                    float hash(vec2 p) {
+                        p = fract(p * vec2(234.34, 435.345));
+                        p += dot(p, p + 34.23);
+                        return fract(p.x * p.y);
+                    }
+
+                    float vnoise(vec2 p) {
+                        vec2 i = floor(p);
+                        vec2 f = fract(p);
+                        vec2 u = f * f * (3.0 - 2.0 * f);
+                        return mix(
+                            mix(hash(i),                hash(i + vec2(1.0, 0.0)), u.x),
+                            mix(hash(i + vec2(0.0,1.0)), hash(i + vec2(1.0,1.0)), u.x),
+                            u.y
+                        );
+                    }
+
+                    float fbm(vec2 p) {
+                        float v = 0.0, a = 0.5;
+                        mat2 m = mat2(0.866, 0.5, -0.5, 0.866);
+                        for (int i = 0; i < 5; i++) {
+                            v += a * vnoise(p);
+                            p  = m * p * 2.1 + vec2(100.0);
+                            a *= 0.5;
+                        }
+                        return v;
                     }
 
                     void main() {
                         vec2 uv = vUv;
+                        float T = uTime * 0.062;
 
-                        /* Distorção sutil ao redor do mouse */
-                        vec2 m = uMouse * 2.0 - 1.0;
-                        float d = length(uv * 2.0 - 1.0 - m * 0.6);
-                        uv += m * 0.006 * (1.0 - smoothstep(0.0, 1.8, d));
+                        vec2 q = vec2(
+                            fbm(uv * 2.8 + T * 0.9),
+                            fbm(uv * 2.8 + vec2(5.2, 1.3) + T * 0.7)
+                        );
+                        vec2 r = vec2(
+                            fbm(uv * 2.2 + 3.6 * q + vec2(1.7, 9.2) + T * 0.5),
+                            fbm(uv * 2.2 + 3.6 * q + vec2(8.3, 2.8) + T * 0.42)
+                        );
+                        float f = fbm(uv * 1.8 + 4.2 * r + T * 0.3);
 
-                        /* 5 ondas sobrepostas — efeito seda */
-                        float w  = wave(uv, 2.8, 0.18, 0.00) * 0.30
-                                 + wave(uv, 5.1, 0.13, 1.57) * 0.22
-                                 + wave(uv, 3.6, 0.09, 3.14) * 0.22
-                                 + wave(uv, 7.8, 0.22, 0.78) * 0.14
-                                 + wave(uv, 1.9, 0.07, 2.35) * 0.12;
-                        w = w * 0.5 + 0.5;
+                        float vein = 1.0 - abs(fbm(uv * 4.8 + r * 2.0 + T * 0.6) * 2.0 - 1.0);
+                        vein = pow(max(vein, 0.0), 2.2) * 0.25;
+                        f = clamp(f * 0.88 + vein, 0.0, 1.0);
 
-                        /* Paleta: off-white → creme quente → ouro */
-                        vec3 cBase  = vec3(0.980, 0.976, 0.965); /* #FAF9F6 */
-                        vec3 cCream = vec3(0.960, 0.938, 0.895); /* creme */
-                        vec3 cGoldL = vec3(0.906, 0.816, 0.565); /* ouro claro */
-                        vec3 cGold  = vec3(0.773, 0.627, 0.349); /* #C5A059 */
+                        float mdist = length(uv - uMouse);
+                        f += exp(-mdist * mdist * 5.5) * 0.16;
+                        f  = clamp(f, 0.0, 1.0);
 
-                        vec3 col = cBase;
-                        col = mix(col, cCream, w * 1.85);
-                        col = mix(col, cGoldL, max(0.0, w * 2.5 - 1.15) * 0.50);
-                        col = mix(col, cGold,  max(0.0, w * 3.2 - 2.10) * 0.28);
+                        vec3 c0 = vec3(0.980, 0.976, 0.965);
+                        vec3 c1 = vec3(0.970, 0.952, 0.920);
+                        vec3 c2 = vec3(0.945, 0.895, 0.785);
+                        vec3 c3 = vec3(0.893, 0.803, 0.568);
+                        vec3 c4 = vec3(0.773, 0.627, 0.349);
 
-                        /* Mais ouro conforme desce na página */
-                        col = mix(col, cGoldL, uScroll * 0.10 * w);
+                        vec3 col = mix(c0, c1, smoothstep(0.00, 0.28, f));
+                        col = mix(col, c2, smoothstep(0.26, 0.52, f));
+                        col = mix(col, c3, smoothstep(0.50, 0.76, f));
+                        col = mix(col, c4, smoothstep(0.74, 1.00, f));
 
-                        /* Vinheta suave nas bordas */
-                        float v = 1.0 - length((vUv - 0.5) * 1.3) * 0.12;
-                        col *= v;
+                        float vign = 1.0 - dot(vUv - 0.5, vUv - 0.5) * 0.30;
+                        col *= clamp(vign, 0.82, 1.0);
 
                         gl_FragColor = vec4(col, 1.0);
                     }
@@ -1302,14 +1326,12 @@
 
             scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), mat));
 
-            /* Resize — canvas é absoluto dentro do hero (100vw × 100vh) */
             function onResize() {
                 renderer.setSize(canvas.offsetWidth || window.innerWidth,
                                  canvas.offsetHeight || window.innerHeight);
             }
             window.addEventListener('resize', onResize, { passive: true });
 
-            /* Mouse — coordenadas relativas ao hero */
             const heroEl = document.getElementById('hero');
             document.addEventListener('mousemove', e => {
                 const r = heroEl ? heroEl.getBoundingClientRect() : null;
@@ -1320,10 +1342,8 @@
                 uniforms.uMouse.value.set(x / w, 1.0 - y / h);
             }, { passive: true });
 
-            /* Integra com o ticker do GSAP (já tem rAF ativo)
-               1º arg = tempo total em segundos desde o início do GSAP */
             gsap.ticker.add(time => {
-                uniforms.uTime.value = time * 0.45; /* escala: seda lenta e suave */
+                uniforms.uTime.value = time;
                 renderer.render(scene, camera);
             });
         })();
@@ -1511,8 +1531,8 @@
         }
 
         /* ══════════════════════════════════════════
-           WebGL Seda — Sobre section
-           Mesmo shader do hero — continuidade visual
+           WebGL Ouro Vivo — Sobre section
+           Mesmo shader FBM do hero — continuidade visual
         ══════════════════════════════════════════ */
         (function () {
             const canvas  = document.getElementById('sobreCanvas');
@@ -1528,7 +1548,6 @@
                     canvas.offsetHeight || sobreEl.offsetHeight || window.innerHeight
                 );
             }
-            /* Aguarda layout para dimensionar corretamente */
             requestAnimationFrame(sizeRenderer);
 
             const scene  = new THREE.Scene();
@@ -1549,42 +1568,74 @@
                     }
                 `,
                 fragmentShader: `
-                    precision highp float;
+                    precision mediump float;
                     varying vec2 vUv;
                     uniform float uTime;
                     uniform vec2  uMouse;
 
-                    float wave(vec2 p, float freq, float spd, float ph) {
-                        return sin(p.x * freq + uTime * spd + ph) *
-                               cos(p.y * freq * 0.65 + uTime * spd * 0.75 + ph * 1.35);
+                    float hash(vec2 p) {
+                        p = fract(p * vec2(234.34, 435.345));
+                        p += dot(p, p + 34.23);
+                        return fract(p.x * p.y);
+                    }
+
+                    float vnoise(vec2 p) {
+                        vec2 i = floor(p);
+                        vec2 f = fract(p);
+                        vec2 u = f * f * (3.0 - 2.0 * f);
+                        return mix(
+                            mix(hash(i),                hash(i + vec2(1.0, 0.0)), u.x),
+                            mix(hash(i + vec2(0.0,1.0)), hash(i + vec2(1.0,1.0)), u.x),
+                            u.y
+                        );
+                    }
+
+                    float fbm(vec2 p) {
+                        float v = 0.0, a = 0.5;
+                        mat2 m = mat2(0.866, 0.5, -0.5, 0.866);
+                        for (int i = 0; i < 5; i++) {
+                            v += a * vnoise(p);
+                            p  = m * p * 2.1 + vec2(100.0);
+                            a *= 0.5;
+                        }
+                        return v;
                     }
 
                     void main() {
                         vec2 uv = vUv;
+                        float T = uTime * 0.062;
 
-                        vec2 m = uMouse * 2.0 - 1.0;
-                        float d = length(uv * 2.0 - 1.0 - m * 0.6);
-                        uv += m * 0.006 * (1.0 - smoothstep(0.0, 1.8, d));
+                        vec2 q = vec2(
+                            fbm(uv * 2.8 + T * 0.9),
+                            fbm(uv * 2.8 + vec2(5.2, 1.3) + T * 0.7)
+                        );
+                        vec2 r = vec2(
+                            fbm(uv * 2.2 + 3.6 * q + vec2(1.7, 9.2) + T * 0.5),
+                            fbm(uv * 2.2 + 3.6 * q + vec2(8.3, 2.8) + T * 0.42)
+                        );
+                        float f = fbm(uv * 1.8 + 4.2 * r + T * 0.3);
 
-                        float w  = wave(uv, 2.8, 0.18, 0.00) * 0.30
-                                 + wave(uv, 5.1, 0.13, 1.57) * 0.22
-                                 + wave(uv, 3.6, 0.09, 3.14) * 0.22
-                                 + wave(uv, 7.8, 0.22, 0.78) * 0.14
-                                 + wave(uv, 1.9, 0.07, 2.35) * 0.12;
-                        w = w * 0.5 + 0.5;
+                        float vein = 1.0 - abs(fbm(uv * 4.8 + r * 2.0 + T * 0.6) * 2.0 - 1.0);
+                        vein = pow(max(vein, 0.0), 2.2) * 0.25;
+                        f = clamp(f * 0.88 + vein, 0.0, 1.0);
 
-                        vec3 cBase  = vec3(0.980, 0.976, 0.965);
-                        vec3 cCream = vec3(0.960, 0.938, 0.895);
-                        vec3 cGoldL = vec3(0.906, 0.816, 0.565);
-                        vec3 cGold  = vec3(0.773, 0.627, 0.349);
+                        float mdist = length(uv - uMouse);
+                        f += exp(-mdist * mdist * 5.5) * 0.16;
+                        f  = clamp(f, 0.0, 1.0);
 
-                        vec3 col = cBase;
-                        col = mix(col, cCream, w * 1.85);
-                        col = mix(col, cGoldL, max(0.0, w * 2.5 - 1.15) * 0.50);
-                        col = mix(col, cGold,  max(0.0, w * 3.2 - 2.10) * 0.28);
+                        vec3 c0 = vec3(0.980, 0.976, 0.965);
+                        vec3 c1 = vec3(0.970, 0.952, 0.920);
+                        vec3 c2 = vec3(0.945, 0.895, 0.785);
+                        vec3 c3 = vec3(0.893, 0.803, 0.568);
+                        vec3 c4 = vec3(0.773, 0.627, 0.349);
 
-                        float v = 1.0 - length((vUv - 0.5) * 1.3) * 0.12;
-                        col *= v;
+                        vec3 col = mix(c0, c1, smoothstep(0.00, 0.28, f));
+                        col = mix(col, c2, smoothstep(0.26, 0.52, f));
+                        col = mix(col, c3, smoothstep(0.50, 0.76, f));
+                        col = mix(col, c4, smoothstep(0.74, 1.00, f));
+
+                        float vign = 1.0 - dot(vUv - 0.5, vUv - 0.5) * 0.30;
+                        col *= clamp(vign, 0.82, 1.0);
 
                         gl_FragColor = vec4(col, 1.0);
                     }
@@ -1612,10 +1663,10 @@
                 { rootMargin: '150px' }
             ).observe(sobreEl);
 
-            /* Ticker GSAP compartilhado — mesma escala de tempo que o hero */
+            /* Ticker GSAP compartilhado — mesma escala que o hero */
             gsap.ticker.add(time => {
                 if (!sobreVisible) return;
-                uniforms.uTime.value = time * 0.45;
+                uniforms.uTime.value = time;
                 renderer.render(scene, camera);
             });
         })();
