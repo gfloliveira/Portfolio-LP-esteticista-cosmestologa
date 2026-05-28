@@ -47,10 +47,13 @@
             box-sizing: border-box;
         }
 
-        html { font-size: 16px; }
+        html {
+            font-size: 16px;
+            background: transparent; /* necessário para o canvas WebGL (z-index:-1) ser visível */
+        }
 
         body {
-            background: transparent; /* WebGL canvas #bgCanvas fornece o fundo */
+            background: transparent;
             color: var(--color-text-dark);
             font-family: var(--font-sans);
             font-weight: 300;
@@ -61,7 +64,7 @@
         #sobre {
             background: var(--color-bg);
             position: relative;
-            box-shadow: 0 -16px 60px rgba(0, 0, 0, 0.07), 0 -1px 0 rgba(197, 160, 89, 0.14);
+            box-shadow: 0 -12px 48px rgba(0, 0, 0, 0.06), 0 -1px 0 rgba(197, 160, 89, 0.12);
         }
 
         /* Cursor padrão do sistema em todos os dispositivos */
@@ -1588,20 +1591,19 @@
            Cada seção "levanta" sobre a anterior
         ══════════════════════════════════════════ */
         gsap.utils.toArray('section:not(#hero)').forEach(sec => {
-            gsap.fromTo(sec,
-                { y: 50, borderRadius: '20px 20px 0 0' },
-                {
-                    y: 0, borderRadius: '0px 0px 0 0',
-                    ease: 'power3.out',
-                    duration: 1.0,
-                    scrollTrigger: {
-                        trigger: sec,
-                        start: 'top 90%',
-                        end: 'top 25%',
-                        scrub: 0.8,
-                    }
+            /* gsap.from — seção está na posição correta no carregamento,
+               anima "de" um estado deslocado ao entrar na viewport.
+               Evita pré-deslocar a seção 50px ao carregar a página. */
+            gsap.from(sec, {
+                y: 40,
+                ease: 'power3.out',
+                duration: 1.1,
+                scrollTrigger: {
+                    trigger: sec,
+                    start: 'top 88%',
+                    toggleActions: 'play none none none',
                 }
-            );
+            });
         });
 
         /* ══════════════════════════════════════════
