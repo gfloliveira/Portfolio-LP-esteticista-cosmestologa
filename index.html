@@ -751,6 +751,16 @@
             .scroll-hint { display: none; }
         }
 
+        /* Degrade cream no fundo do hero — "ponte" com a seção Sobre */
+        .hero__fade-bottom {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 80px;
+            background: linear-gradient(to bottom, transparent 0%, var(--color-bg) 100%);
+            z-index: 3;
+            pointer-events: none;
+        }
+
         /* ═══════════════════════════════════════════
            SOBRE — SECTION 2
         ═══════════════════════════════════════════ */
@@ -776,7 +786,7 @@
         .sobre__fade-top {
             position: absolute;
             top: 0; left: 0; right: 0;
-            height: 200px;
+            height: 80px;
             background: linear-gradient(to bottom, var(--color-bg) 0%, transparent 100%);
             z-index: 5;
             pointer-events: none;
@@ -991,7 +1001,7 @@
                 font-size: 2.0rem;
             }
             .sobre__fade-top {
-                height: 120px;
+                height: 60px;
             }
         }
     </style>
@@ -1126,6 +1136,9 @@
             <div class="side-badge__line"></div>
         </div>
 
+        <!-- Degradê na base do hero — funde com a seção Sobre -->
+        <div class="hero__fade-bottom" aria-hidden="true"></div>
+
     </section>
 
 
@@ -1221,8 +1234,8 @@
         gsap.registerPlugin(ScrollTrigger);
 
         /* ══════════════════════════════════════════
-           WebGL Ouro Vivo — Hero + Sobre compartilham
-           o mesmo shader FBM para continuidade visual
+           WebGL FBM Ouro Vivo — Hero
+           UV normalizados por aspect + offset zero
         ══════════════════════════════════════════ */
         (function () {
             const canvas = document.getElementById('bgCanvas');
@@ -1230,14 +1243,15 @@
 
             const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: false });
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.8));
-            renderer.setSize(window.innerWidth, window.innerHeight);
 
             const scene  = new THREE.Scene();
             const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 
             const uniforms = {
-                uTime:  { value: 0.0 },
-                uMouse: { value: new THREE.Vector2(0.5, 0.5) },
+                uTime:       { value: 0.0 },
+                uMouse:      { value: new THREE.Vector2(0.5, 0.5) },
+                uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+                uYOffset:    { value: 0.0 },
             };
 
             const mat = new THREE.ShaderMaterial({
@@ -1254,6 +1268,8 @@
                     varying vec2 vUv;
                     uniform float uTime;
                     uniform vec2  uMouse;
+                    uniform vec2  uResolution;
+                    uniform float uYOffset;
 
                     float hash(vec2 p) {
                         p = fract(p * vec2(234.34, 435.345));
@@ -1284,8 +1300,9 @@
                     }
 
                     void main() {
-                        vec2 uv = vUv;
-                        float T = uTime * 0.062;
+                        float aspect = uResolution.x / uResolution.y;
+                        vec2 uv  = vec2(vUv.x * aspect, vUv.y + uYOffset);
+                        float T  = uTime * 0.062;
 
                         vec2 q = vec2(
                             fbm(uv * 2.8 + T * 0.9),
@@ -1301,8 +1318,9 @@
                         vein = pow(max(vein, 0.0), 2.2) * 0.25;
                         f = clamp(f * 0.88 + vein, 0.0, 1.0);
 
-                        float mdist = length(uv - uMouse);
-                        f += exp(-mdist * mdist * 5.5) * 0.16;
+                        vec2 mUV   = vec2(uMouse.x * aspect, uMouse.y + uYOffset);
+                        float mdist = length(uv - mUV);
+                        f += exp(-mdist * mdist * 8.0) * 0.18;
                         f  = clamp(f, 0.0, 1.0);
 
                         vec3 c0 = vec3(0.980, 0.976, 0.965);
@@ -1327,9 +1345,12 @@
             scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), mat));
 
             function onResize() {
-                renderer.setSize(canvas.offsetWidth || window.innerWidth,
-                                 canvas.offsetHeight || window.innerHeight);
+                const w = canvas.offsetWidth  || window.innerWidth;
+                const h = canvas.offsetHeight || window.innerHeight;
+                renderer.setSize(w, h);
+                uniforms.uResolution.value.set(w, h);
             }
+            onResize();
             window.addEventListener('resize', onResize, { passive: true });
 
             const heroEl = document.getElementById('hero');
@@ -1531,8 +1552,9 @@
         }
 
         /* ══════════════════════════════════════════
-           WebGL Ouro Vivo — Sobre section
-           Mesmo shader FBM do hero — continuidade visual
+           WebGL FBM Ouro Vivo — Sobre
+           uYOffset = -(heroH / sobreH): topo do Sobre
+           continua exatamente onde o hero termina
         ══════════════════════════════════════════ */
         (function () {
             const canvas  = document.getElementById('sobreCanvas');
@@ -1542,20 +1564,14 @@
             const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: false });
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
 
-            function sizeRenderer() {
-                renderer.setSize(
-                    canvas.offsetWidth  || window.innerWidth,
-                    canvas.offsetHeight || sobreEl.offsetHeight || window.innerHeight
-                );
-            }
-            requestAnimationFrame(sizeRenderer);
-
             const scene  = new THREE.Scene();
             const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 
             const uniforms = {
-                uTime:  { value: 0.0 },
-                uMouse: { value: new THREE.Vector2(0.5, 0.5) },
+                uTime:       { value: 0.0 },
+                uMouse:      { value: new THREE.Vector2(0.5, 0.5) },
+                uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+                uYOffset:    { value: -1.0 },
             };
 
             const mat = new THREE.ShaderMaterial({
@@ -1572,6 +1588,8 @@
                     varying vec2 vUv;
                     uniform float uTime;
                     uniform vec2  uMouse;
+                    uniform vec2  uResolution;
+                    uniform float uYOffset;
 
                     float hash(vec2 p) {
                         p = fract(p * vec2(234.34, 435.345));
@@ -1602,8 +1620,9 @@
                     }
 
                     void main() {
-                        vec2 uv = vUv;
-                        float T = uTime * 0.062;
+                        float aspect = uResolution.x / uResolution.y;
+                        vec2 uv  = vec2(vUv.x * aspect, vUv.y + uYOffset);
+                        float T  = uTime * 0.062;
 
                         vec2 q = vec2(
                             fbm(uv * 2.8 + T * 0.9),
@@ -1619,8 +1638,9 @@
                         vein = pow(max(vein, 0.0), 2.2) * 0.25;
                         f = clamp(f * 0.88 + vein, 0.0, 1.0);
 
-                        float mdist = length(uv - uMouse);
-                        f += exp(-mdist * mdist * 5.5) * 0.16;
+                        vec2 mUV   = vec2(uMouse.x * aspect, uMouse.y + uYOffset);
+                        float mdist = length(uv - mUV);
+                        f += exp(-mdist * mdist * 8.0) * 0.18;
                         f  = clamp(f, 0.0, 1.0);
 
                         vec3 c0 = vec3(0.980, 0.976, 0.965);
@@ -1644,7 +1664,6 @@
 
             scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), mat));
 
-            /* Mouse — coordenadas relativas à seção sobre */
             document.addEventListener('mousemove', e => {
                 const r = sobreEl.getBoundingClientRect();
                 if (e.clientY < r.top - 150 || e.clientY > r.bottom + 150) return;
@@ -1654,16 +1673,28 @@
                 );
             }, { passive: true });
 
+            function sizeRenderer() {
+                const w = canvas.offsetWidth  || window.innerWidth;
+                const h = canvas.offsetHeight || sobreEl.offsetHeight || window.innerHeight;
+                renderer.setSize(w, h);
+                uniforms.uResolution.value.set(w, h);
+                /* uYOffset: topo do Sobre = fundo do hero no espaço UV.
+                   Em WebGL vUv.y=1 é o topo e vUv.y=0 é o fundo.
+                   Queremos: 1 + uYOffset = 0 → uYOffset = -1 (seções iguais).
+                   Generalizado: -(heroH / sobreH) para alturas diferentes. */
+                const heroEl = document.getElementById('hero');
+                const heroH  = heroEl ? heroEl.offsetHeight : h;
+                uniforms.uYOffset.value = -(heroH / h);
+            }
+            requestAnimationFrame(sizeRenderer);
             window.addEventListener('resize', sizeRenderer, { passive: true });
 
-            /* IntersectionObserver — pausa GPU quando fora de tela */
             let sobreVisible = false;
             new IntersectionObserver(
                 ([entry]) => { sobreVisible = entry.isIntersecting; },
                 { rootMargin: '150px' }
             ).observe(sobreEl);
 
-            /* Ticker GSAP compartilhado — mesma escala que o hero */
             gsap.ticker.add(time => {
                 if (!sobreVisible) return;
                 uniforms.uTime.value = time;
