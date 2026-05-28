@@ -60,11 +60,10 @@
             overflow-x: hidden;
         }
 
-        /* Painéis com fundo sólido — se empilham sobre o hero à medida que rolam */
+        /* Seções com fundo sólido — cobrem o hero ao rolar */
         #sobre {
             background: var(--color-bg);
             position: relative;
-            box-shadow: 0 -12px 48px rgba(0, 0, 0, 0.06), 0 -1px 0 rgba(197, 160, 89, 0.12);
         }
 
         /* Cursor padrão do sistema em todos os dispositivos */
@@ -1585,26 +1584,6 @@
                 });
             });
         })();
-
-        /* ══════════════════════════════════════════
-           Transições entre painéis (stacking)
-           Cada seção "levanta" sobre a anterior
-        ══════════════════════════════════════════ */
-        gsap.utils.toArray('section:not(#hero)').forEach(sec => {
-            /* gsap.from — seção está na posição correta no carregamento,
-               anima "de" um estado deslocado ao entrar na viewport.
-               Evita pré-deslocar a seção 50px ao carregar a página. */
-            gsap.from(sec, {
-                y: 40,
-                ease: 'power3.out',
-                duration: 1.1,
-                scrollTrigger: {
-                    trigger: sec,
-                    start: 'top 88%',
-                    toggleActions: 'play none none none',
-                }
-            });
-        });
 
         /* ══════════════════════════════════════════
            Sessão 02 — Sobre: ScrollTrigger animations
