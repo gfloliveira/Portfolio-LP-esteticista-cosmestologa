@@ -8,25 +8,21 @@
     <meta name="theme-color" content="#FAF9F6">
     <meta name="color-scheme" content="light">
 
-    <!-- LCP preload — hero image carrega com prioridade máxima -->
     <link rel="preload" as="image" href="assets/hero.jpg" fetchpriority="high">
-
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 
     <style>
         /* =============================================
-           Design System — CSS Custom Properties
+           Design System
         ============================================= */
         :root {
             color-scheme: light;
             --color-bg:           #FAF9F6;
+            --color-bg-dark:      #1C1A17;
             --color-primary-gold: #C5A059;
             --color-gold-light:   #E6C280;
-            --color-gold-dark:    #A8854A;
-            --color-accent:       #D4AF37;
             --color-text-dark:    #1C1A17;
             --color-text-muted:   #7A7568;
             --color-text-light:   #B0A898;
@@ -38,14 +34,7 @@
             --ease-smooth:  cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
-        /* =============================================
-           Reset & Base
-        ============================================= */
-        *, *::before, *::after {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
         html { font-size: 16px; }
 
@@ -57,22 +46,24 @@
             overflow-x: hidden;
         }
 
-        /* Cursor padrão do sistema em todos os dispositivos */
+        /* =============================================
+           Cursor
+        ============================================= */
+        .cursor {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            background: var(--color-primary-gold);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.85;
+            transform: translate(-50%, -50%);
+        }
 
         /* =============================================
            Loader
         ============================================= */
-        /* WebGL silk — canvas absoluto dentro do hero */
-        #bgCanvas {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            pointer-events: none;
-            display: block;
-        }
-
         .loader {
             position: fixed;
             inset: 0;
@@ -87,10 +78,7 @@
             -webkit-backdrop-filter: blur(6px);
         }
 
-        .loader__wordmark-wrap {
-            overflow: hidden;
-            padding-bottom: 0.08em; /* espaço para descendentes */
-        }
+        .loader__wordmark-wrap { overflow: hidden; padding-bottom: 0.08em; }
 
         .loader__wordmark {
             display: block;
@@ -106,12 +94,7 @@
         .loader__rule {
             width: 0px;
             height: 1px;
-            background: linear-gradient(
-                to right,
-                transparent 0%,
-                var(--color-primary-gold) 50%,
-                transparent 100%
-            );
+            background: linear-gradient(to right, transparent 0%, var(--color-primary-gold) 50%, transparent 100%);
         }
 
         .loader__tagline {
@@ -135,12 +118,9 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: padding 0.4s var(--ease-smooth),
-                        background 0.4s ease,
-                        backdrop-filter 0.4s ease;
+            transition: padding 0.4s var(--ease-smooth), background 0.4s ease, backdrop-filter 0.4s ease;
         }
 
-        /* Frosted glass ao rolar */
         .nav.is-scrolled {
             padding: 16px 60px;
             background: rgba(250, 249, 246, 0.88);
@@ -157,8 +137,6 @@
             color: var(--color-text-dark);
             text-decoration: none;
         }
-
-        .nav__logo span { color: var(--color-primary-gold); }
 
         .nav__menu {
             list-style: none;
@@ -179,7 +157,6 @@
 
         .nav__menu a:hover { color: var(--color-primary-gold); }
 
-        /* ── Hamburger (mobile) ── */
         .nav__burger {
             display: none;
             flex-direction: column;
@@ -188,6 +165,7 @@
             border: none;
             padding: 10px;
             margin: -10px;
+            cursor: pointer;
         }
 
         .nav__burger span {
@@ -203,7 +181,6 @@
         .nav__burger.is-open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
         .nav__burger.is-open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
 
-        /* ── Mobile Menu Overlay ── */
         .mobile-menu {
             position: fixed;
             inset: 0;
@@ -219,10 +196,7 @@
             pointer-events: none;
         }
 
-        .mobile-menu.is-open {
-            transform: translateY(0);
-            pointer-events: all;
-        }
+        .mobile-menu.is-open { transform: translateY(0); pointer-events: all; }
 
         .mobile-menu a {
             font-family: var(--font-serif);
@@ -236,40 +210,35 @@
 
         .mobile-menu a:hover { color: var(--color-primary-gold); }
 
-        .mobile-menu__rule {
-            width: 36px;
-            height: 1px;
-            background: rgba(197, 160, 89, 0.3);
-        }
+        .mobile-menu__rule { width: 36px; height: 1px; background: rgba(197, 160, 89, 0.3); }
 
         /* =============================================
-           Hero Section
+           Hero
         ============================================= */
         .hero {
             position: relative;
             width: 100%;
             height: 100vh;
-            height: 100svh; /* evita o endereço mobile ficar dentro do hero */
+            height: 100svh;
             min-height: 640px;
             display: flex;
             align-items: center;
             overflow: hidden;
-            background: transparent; /* WebGL silk mostra por baixo */
+            background:
+                radial-gradient(ellipse at 68% 35%, rgba(197, 160, 89, 0.10) 0%, transparent 55%),
+                radial-gradient(ellipse at 12% 75%, rgba(197, 160, 89, 0.06) 0%, transparent 45%),
+                linear-gradient(155deg, #FDFCFA 0%, #FAF9F6 35%, #F7F2EC 70%, #F5EFE8 100%);
         }
 
-        /* ── Coluna da foto (desktop: lado direito) ── */
         .hero__image-col {
             position: absolute;
-            right: 0;
-            top: 0;
-            bottom: 0;
+            right: 0; top: 0; bottom: 0;
             width: 48%;
             overflow: hidden;
             will-change: transform;
             z-index: 2;
         }
 
-        /* Véu: funde a borda esquerda da foto no fundo off-white */
         .hero__image-col::after {
             content: '';
             position: absolute;
@@ -289,11 +258,10 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            object-position: center 30%; /* centraliza sujeito, corta teto e revela mais corpo */
+            object-position: center 30%;
             display: block;
         }
 
-        /* ── Conteúdo principal ── */
         .hero__content {
             position: relative;
             z-index: 10;
@@ -305,7 +273,6 @@
 
         .hero__text { max-width: 580px; }
 
-        /* Eyebrow */
         .hero__eyebrow {
             display: flex;
             align-items: center;
@@ -327,7 +294,6 @@
             background: var(--color-primary-gold);
         }
 
-        /* Título */
         .hero__title {
             font-family: var(--font-serif);
             font-weight: 300;
@@ -338,13 +304,7 @@
             margin-bottom: 32px;
         }
 
-        /* Clip reveal — inner span gerenciado exclusivamente via GSAP */
-        .title-line {
-            display: block;
-            overflow: hidden;
-            padding-bottom: 0.08em;
-        }
-
+        .title-line { display: block; overflow: hidden; padding-bottom: 0.08em; }
         .title-line__inner { display: block; }
 
         .hero__title em {
@@ -353,7 +313,6 @@
             font-weight: 300;
         }
 
-        /* Subtítulo */
         .hero__subtitle {
             font-family: var(--font-sans);
             font-size: 0.92rem;
@@ -364,7 +323,6 @@
             margin-bottom: 52px;
         }
 
-        /* CTA */
         .hero__cta {
             display: flex;
             align-items: center;
@@ -372,14 +330,13 @@
             flex-wrap: wrap;
         }
 
-        /* Botão primário */
         .btn-gold {
             position: relative;
             display: inline-flex;
             align-items: center;
             gap: 16px;
             padding: 16px 36px;
-            min-height: 52px; /* área de toque adequada */
+            min-height: 52px;
             border: 1px solid var(--color-primary-gold);
             border-radius: 2px;
             background: transparent;
@@ -404,20 +361,17 @@
             transition: transform 0.5s var(--ease-elegant);
         }
 
-        /* Hover fill — só em dispositivos com mouse */
         @media (hover: hover) {
             .btn-gold:hover::before { transform: translateY(0); }
             .btn-gold:hover { color: var(--color-bg); }
             .btn-gold:hover .btn-gold__arrow { width: 26px; }
         }
 
-        /* Tap feedback em touch */
         @media (hover: none) {
             .btn-gold:active { background: var(--color-primary-gold); color: var(--color-bg); }
         }
 
-        .btn-gold__label,
-        .btn-gold__arrow { position: relative; z-index: 1; }
+        .btn-gold__label, .btn-gold__arrow { position: relative; z-index: 1; }
 
         .btn-gold__arrow {
             display: block;
@@ -427,7 +381,6 @@
             transition: width 0.35s ease;
         }
 
-        /* Botão ghost */
         .btn-ghost {
             font-family: var(--font-sans);
             font-size: 0.68rem;
@@ -458,9 +411,6 @@
             .btn-ghost:hover::after { width: 38px; }
         }
 
-        /* =============================================
-           Side Badge
-        ============================================= */
         .side-badge {
             position: absolute;
             right: 48px;
@@ -488,157 +438,24 @@
         }
 
         /* =============================================
-           Reduced Motion — acessibilidade
+           Sobre
         ============================================= */
-        @media (prefers-reduced-motion: reduce) {
-            .mobile-menu  { transition: none; }
-            .nav          { transition: none; }
-            .btn-gold::before { transition: none; }
-        }
-
-        /* =============================================
-           Tablet — ≤1100px
-        ============================================= */
-        @media (max-width: 1100px) {
-            .nav { padding: 26px 44px; }
-            .nav.is-scrolled { padding: 15px 44px; }
-            .hero__content { padding: 0 44px; }
-            .hero__image-col { width: 52%; }
-            .side-badge  { right: 36px; }
-        }
-
-        /* =============================================
-           Mobile — ≤768px
-           Layout cinematográfico: foto full-screen
-           com gradiente de baixo para cima
-        ============================================= */
-        @media (max-width: 768px) {
-            /* Nav */
-            .nav { padding: 20px 24px; }
-            .nav.is-scrolled { padding: 13px 24px; }
-            .nav__menu   { display: none; }
-            .nav__burger { display: flex; }
-
-            /* Hero: conteúdo na parte de baixo */
-            .hero {
-                align-items: flex-end;
-                padding-bottom: 72px;
-            }
-
-            /* Foto ocupa a tela inteira */
-            .hero__image-col {
-                width: 100%;
-                right: 0; left: 0;
-            }
-
-            /* Véu mobile: base opaca (área do texto) → topo transparente (rosto visível) */
-            .hero__image-col::after {
-                background: linear-gradient(
-                    to top,
-                    var(--color-bg)                   0%,
-                    rgba(250, 249, 246, 0.98)        42%,
-                    rgba(250, 249, 246, 0.75)        54%,
-                    rgba(250, 249, 246, 0.12)        72%,
-                    transparent                      88%
-                );
-            }
-
-            /* object-position vertical não tem efeito em fill-height; horizontal centraliza o rosto */
-            .hero__image { object-position: center top; }
-
-            /* Conteúdo */
-            .hero__content { padding: 0 24px; }
-
-            /* Reordenação editorial mobile:
-               título primeiro (impacto), eyebrow abaixo como credencial */
-            .hero__text {
-                max-width: 100%;
-                display: flex;
-                flex-direction: column;
-            }
-
-            .hero__title    { order: 1; margin-bottom: 10px; }
-
-            .hero__eyebrow  {
-                order: 2;
-                margin-bottom: 18px;
-                margin-top: 0;
-                font-size: 0.6rem;
-                letter-spacing: 0.3em;
-            }
-
-            .hero__subtitle {
-                order: 3;
-                max-width: 100%;
-                font-size: 0.94rem;
-                margin-bottom: 40px;
-            }
-
-            .hero__cta { order: 4; gap: 20px; }
-
-            .side-badge  { display: none; }
-        }
-
-        /* =============================================
-           Mobile pequeno — ≤480px
-        ============================================= */
-        @media (max-width: 480px) {
-            .hero { padding-bottom: 60px; }
-
-            .hero__title {
-                font-size: clamp(2.4rem, 9.5vw, 3.2rem);
-            }
-
-            .hero__eyebrow { margin-bottom: 14px; font-size: 0.58rem; }
-
-            .hero__subtitle {
-                font-size: 0.88rem;
-                line-height: 1.8;
-                margin-bottom: 32px;
-            }
-
-            .hero__cta {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 16px;
-            }
-
-        }
-
-        /* ═══════════════════════════════════════════
-           SOBRE — SECTION 2
-        ═══════════════════════════════════════════ */
         .sobre {
             position: relative;
             width: 100%;
             min-height: 100vh;
             overflow: hidden;
-            background: var(--color-bg); /* fallback se WebGL falhar */
+            background: var(--color-bg);
             margin-top: -2px;
         }
 
-        #sobreCanvas {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            pointer-events: none;
-            display: block;
-        }
-
-        .sobre__fade-top { display: none; }
-
         .sobre__inner {
-            position: relative;
-            z-index: 2;
             display: grid;
             grid-template-columns: 52% 48%;
             min-height: 100vh;
             align-items: stretch;
         }
 
-        /* ── Coluna de texto ── */
         .sobre__text-col {
             display: flex;
             flex-direction: column;
@@ -654,7 +471,6 @@
             text-transform: uppercase;
             color: var(--color-primary-gold);
             margin-bottom: 26px;
-            will-change: transform, opacity;
         }
 
         .sobre__title {
@@ -667,21 +483,10 @@
             letter-spacing: -0.01em;
         }
 
-        .sobre__title em {
-            font-style: italic;
-            color: var(--color-primary-gold);
-        }
+        .sobre__title em { font-style: italic; color: var(--color-primary-gold); }
 
-        .sobre__title-line {
-            display: block;
-            overflow: hidden;
-            padding-bottom: 0.06em;
-        }
-
-        .sobre__title-inner {
-            display: block;
-            will-change: transform;
-        }
+        .sobre__title-line { display: block; overflow: hidden; padding-bottom: 0.06em; }
+        .sobre__title-inner { display: block; }
 
         .sobre__divider {
             width: 0;
@@ -697,11 +502,10 @@
             font-weight: 300;
             font-style: italic;
             line-height: 1.75;
-            color: rgba(42, 34, 24, 0.85);
+            color: rgba(28, 26, 23, 0.85);
             border: none;
             padding: 0;
             margin: 0 0 28px;
-            will-change: opacity, transform;
         }
 
         .sobre__bio {
@@ -709,23 +513,14 @@
             font-size: 0.91rem;
             font-weight: 300;
             line-height: 1.88;
-            color: rgba(42, 34, 24, 0.70);
+            color: rgba(28, 26, 23, 0.65);
             max-width: 460px;
             margin: 0 0 60px;
-            will-change: opacity, transform;
         }
 
-        .sobre__stats {
-            display: flex;
-            gap: 48px;
-            align-items: flex-end;
-        }
+        .sobre__stats { display: flex; gap: 48px; align-items: flex-end; }
 
-        .sobre__stat {
-            display: flex;
-            flex-direction: column;
-            will-change: opacity, transform;
-        }
+        .sobre__stat { display: flex; flex-direction: column; }
 
         .sobre__stat-top {
             display: flex;
@@ -759,20 +554,15 @@
             font-weight: 400;
             letter-spacing: 0.22em;
             text-transform: uppercase;
-            color: rgba(42, 34, 24, 0.45);
+            color: rgba(28, 26, 23, 0.40);
         }
 
-        /* ── Coluna da foto ── */
         .sobre__photo-col {
             position: relative;
             overflow: hidden;
             min-height: 100vh;
         }
 
-        /* Degrade no topo da foto para fundir com hero */
-        .sobre__photo-col::before { display: none; }
-
-        /* Sombra na borda esquerda da foto — funde com a coluna de texto */
         .sobre__photo-col::after {
             content: '';
             position: absolute;
@@ -789,53 +579,216 @@
             object-fit: cover;
             object-position: center 15%;
             display: block;
-            will-change: opacity, transform;
         }
 
-        /* ── Responsive ── */
+        /* =============================================
+           Tratamentos
+        ============================================= */
+        .trat {
+            background: var(--color-bg-dark);
+            padding: 140px 0;
+            overflow: hidden;
+        }
+
+        .trat__inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 60px;
+        }
+
+        .trat__header {
+            margin-bottom: 80px;
+        }
+
+        .trat__eyebrow {
+            font-family: var(--font-sans);
+            font-size: 0.62rem;
+            font-weight: 400;
+            letter-spacing: 0.40em;
+            text-transform: uppercase;
+            color: var(--color-primary-gold);
+            margin-bottom: 22px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .trat__eyebrow::before {
+            content: '';
+            flex-shrink: 0;
+            width: 28px;
+            height: 1px;
+            background: var(--color-primary-gold);
+        }
+
+        .trat__title {
+            font-family: var(--font-serif);
+            font-size: clamp(2.4rem, 3.8vw, 3.8rem);
+            font-weight: 300;
+            line-height: 1.1;
+            color: #F0EDE8;
+            letter-spacing: -0.01em;
+        }
+
+        .trat__title em { font-style: italic; color: var(--color-primary-gold); }
+
+        .trat__title-line { display: block; overflow: hidden; padding-bottom: 0.06em; }
+        .trat__title-inner { display: block; }
+
+        .trat__grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            border-top: 1px solid rgba(250, 249, 246, 0.08);
+            border-left: 1px solid rgba(250, 249, 246, 0.08);
+        }
+
+        .trat__card {
+            padding: 52px 44px;
+            border-right: 1px solid rgba(250, 249, 246, 0.08);
+            border-bottom: 1px solid rgba(250, 249, 246, 0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            position: relative;
+            transition: background 0.5s var(--ease-smooth);
+            overflow: hidden;
+        }
+
+        .trat__card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: var(--color-primary-gold);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.55s var(--ease-elegant);
+        }
+
+        @media (hover: hover) {
+            .trat__card:hover { background: rgba(250, 249, 246, 0.03); }
+            .trat__card:hover::after { transform: scaleX(1); }
+            .trat__card:hover .trat__arrow { opacity: 1; transform: translateX(0); }
+        }
+
+        .trat__num {
+            font-family: var(--font-sans);
+            font-size: 0.58rem;
+            font-weight: 400;
+            letter-spacing: 0.22em;
+            color: var(--color-primary-gold);
+            opacity: 0.6;
+        }
+
+        .trat__name {
+            font-family: var(--font-serif);
+            font-size: clamp(1.4rem, 1.8vw, 1.9rem);
+            font-weight: 300;
+            line-height: 1.18;
+            color: #F0EDE8;
+        }
+
+        .trat__desc {
+            font-family: var(--font-sans);
+            font-size: 0.86rem;
+            font-weight: 300;
+            line-height: 1.80;
+            color: rgba(176, 168, 152, 0.75);
+            flex: 1;
+        }
+
+        .trat__arrow {
+            font-family: var(--font-sans);
+            font-size: 0.78rem;
+            color: var(--color-primary-gold);
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: opacity 0.3s ease, transform 0.35s var(--ease-smooth);
+            letter-spacing: 0.08em;
+        }
+
+        /* =============================================
+           Reduced Motion
+        ============================================= */
+        @media (prefers-reduced-motion: reduce) {
+            .mobile-menu, .nav, .btn-gold::before, .trat__card::after { transition: none; }
+        }
+
+        /* =============================================
+           Responsive — ≤1100px
+        ============================================= */
+        @media (max-width: 1100px) {
+            .nav { padding: 26px 44px; }
+            .nav.is-scrolled { padding: 15px 44px; }
+            .hero__content { padding: 0 44px; }
+            .hero__image-col { width: 52%; }
+            .side-badge { right: 36px; }
+        }
+
+        /* ≤1024px */
         @media (max-width: 1024px) {
-            .sobre__inner {
-                grid-template-columns: 56% 44%;
-            }
-            .sobre__text-col {
-                padding: 140px 44px 100px 56px;
-            }
+            .sobre__inner { grid-template-columns: 56% 44%; }
+            .sobre__text-col { padding: 140px 44px 100px 56px; }
+            .trat__inner { padding: 0 44px; }
+            .trat__grid { grid-template-columns: repeat(2, 1fr); }
         }
 
+        /* ≤768px */
         @media (max-width: 768px) {
-            .sobre__inner {
-                grid-template-columns: 1fr;
+            .nav { padding: 20px 24px; }
+            .nav.is-scrolled { padding: 13px 24px; }
+            .nav__menu { display: none; }
+            .nav__burger { display: flex; }
+
+            .hero { align-items: flex-end; padding-bottom: 72px; }
+            .hero__image-col { width: 100%; right: 0; left: 0; }
+            .hero__image-col::after {
+                background: linear-gradient(
+                    to top,
+                    var(--color-bg) 0%,
+                    rgba(250, 249, 246, 0.98) 42%,
+                    rgba(250, 249, 246, 0.75) 54%,
+                    rgba(250, 249, 246, 0.12) 72%,
+                    transparent 88%
+                );
             }
-            .sobre__photo-col {
-                height: 62vh;
-                min-height: unset;
-                order: -1;
-            }
-            .sobre__photo {
-                min-height: unset;
-                height: 100%;
-            }
-            .sobre__text-col {
-                padding: 52px 28px 80px;
-                order: 1;
-            }
-            .sobre__title {
-                font-size: clamp(2.0rem, 8vw, 2.8rem);
-            }
-            .sobre__stats {
-                gap: 24px;
-                flex-wrap: wrap;
-            }
-            .sobre__stat-num {
-                font-size: 2.0rem;
-            }
+            .hero__image { object-position: center top; }
+            .hero__content { padding: 0 24px; }
+            .hero__text { max-width: 100%; display: flex; flex-direction: column; }
+            .hero__title { order: 1; margin-bottom: 10px; }
+            .hero__eyebrow { order: 2; margin-bottom: 18px; font-size: 0.6rem; letter-spacing: 0.3em; }
+            .hero__subtitle { order: 3; max-width: 100%; font-size: 0.94rem; margin-bottom: 40px; }
+            .hero__cta { order: 4; gap: 20px; }
+            .side-badge { display: none; }
+
+            .sobre__inner { grid-template-columns: 1fr; }
+            .sobre__photo-col { height: 62vh; min-height: unset; order: -1; }
+            .sobre__photo { min-height: unset; height: 100%; }
+            .sobre__text-col { padding: 52px 28px 80px; order: 1; }
+            .sobre__title { font-size: clamp(2.0rem, 8vw, 2.8rem); }
+            .sobre__stats { gap: 24px; flex-wrap: wrap; }
+            .sobre__stat-num { font-size: 2.0rem; }
+
+            .trat { padding: 100px 0; }
+            .trat__inner { padding: 0 24px; }
+            .trat__header { margin-bottom: 52px; }
+            .trat__grid { grid-template-columns: 1fr; }
+            .trat__card { padding: 40px 24px; }
+        }
+
+        /* ≤480px */
+        @media (max-width: 480px) {
+            .hero { padding-bottom: 60px; }
+            .hero__title { font-size: clamp(2.4rem, 9.5vw, 3.2rem); }
+            .hero__eyebrow { margin-bottom: 14px; font-size: 0.58rem; }
+            .hero__subtitle { font-size: 0.88rem; line-height: 1.8; margin-bottom: 32px; }
+            .hero__cta { flex-direction: column; align-items: flex-start; gap: 16px; }
         }
     </style>
 </head>
 <body>
 
-
-    <!-- ── Loader ───────────────────────────────── -->
+    <!-- Loader -->
     <div class="loader" id="loader">
         <div class="loader__wordmark-wrap">
             <span class="loader__wordmark" id="loaderWordmark">Laís Nayélli</span>
@@ -844,7 +797,7 @@
         <p class="loader__tagline" id="loaderTagline">Esteticista &amp; Cosmetóloga</p>
     </div>
 
-    <!-- ── Mobile Menu Overlay ──────────────────── -->
+    <!-- Mobile Menu -->
     <div class="mobile-menu" id="mobileMenu" role="dialog" aria-modal="true" aria-label="Menu de navegação">
         <a href="#sobre">Sobre</a>
         <div class="mobile-menu__rule"></div>
@@ -855,11 +808,9 @@
         <a href="#contato">Contato</a>
     </div>
 
-    <!-- ── Navigation ───────────────────────────── -->
+    <!-- Nav -->
     <nav class="nav" id="nav">
-        <a href="#" class="nav__logo" id="navLogo">
-            <span>A·</span>Esteticista
-        </a>
+        <a href="#" class="nav__logo" id="navLogo">Laís Nayélli</a>
         <ul class="nav__menu" id="navMenu">
             <li><a href="#sobre">Sobre</a></li>
             <li><a href="#tratamentos">Tratamentos</a></li>
@@ -868,25 +819,17 @@
         </ul>
         <button class="nav__burger" id="navBurger"
                 aria-label="Abrir menu" aria-expanded="false" aria-controls="mobileMenu">
-            <span></span>
-            <span></span>
-            <span></span>
+            <span></span><span></span><span></span>
         </button>
     </nav>
 
-    <!-- ── Hero ─────────────────────────────────── -->
+    <!-- Hero -->
     <section class="hero" id="hero">
-        <!-- Canvas WebGL fica confinado ao hero, sem criar descontinuidade com seções abaixo -->
-        <canvas id="bgCanvas" aria-hidden="true"></canvas>
-
-
-
-        <!-- Foto real da profissional -->
         <div class="hero__image-col" id="heroImageCol">
             <img
                 class="hero__image"
                 src="assets/hero.jpg"
-                alt="Esteticista e Cosmetóloga sorrindo em seu espaço de atendimento com espelho hollywoodiano"
+                alt="Laís Nayélli, Esteticista e Cosmetóloga, em seu espaço de atendimento"
                 loading="eager"
                 fetchpriority="high"
                 width="893"
@@ -894,76 +837,48 @@
             >
         </div>
 
-        <!-- Conteúdo textual -->
         <div class="hero__content">
             <div class="hero__text">
+                <p class="hero__eyebrow" id="heroEyebrow">Esteticista &amp; Cosmetóloga</p>
 
-                <p class="hero__eyebrow" id="heroEyebrow">
-                    Esteticista &amp; Cosmetóloga
-                </p>
-
-                <h1 class="hero__title" aria-label="A Arte de Revelar a Sua Melhor Versão">
-                    <span class="title-line">
-                        <span class="title-line__inner" id="tl1">A Arte de</span>
-                    </span>
-                    <span class="title-line">
-                        <span class="title-line__inner" id="tl2">Revelar a <em>Sua</em></span>
-                    </span>
-                    <span class="title-line">
-                        <span class="title-line__inner" id="tl3">Melhor Versão.</span>
-                    </span>
+                <h1 class="hero__title" aria-label="Ciência aplicada à beleza que transforma">
+                    <span class="title-line"><span class="title-line__inner" id="tl1">Ciência aplicada</span></span>
+                    <span class="title-line"><span class="title-line__inner" id="tl2">à beleza que</span></span>
+                    <span class="title-line"><span class="title-line__inner" id="tl3"><em>transforma.</em></span></span>
                 </h1>
 
                 <p class="hero__subtitle" id="heroSubtitle">
-                    Protocolos personalizados com técnicas avançadas e ingredientes
-                    de alta performance, desenhados para revelar e realçar a beleza
-                    natural da sua pele.
+                    Protocolos estéticos de precisão, desenvolvidos para resultados
+                    reais e duradouros. Cada atendimento é personalizado para a
+                    sua pele — não para a média.
                 </p>
 
                 <div class="hero__cta" id="heroCta">
                     <a href="#contato" class="btn-gold">
-                        <span class="btn-gold__label">Agendar meu Momento</span>
+                        <span class="btn-gold__label">Agendar Avaliação</span>
                         <span class="btn-gold__arrow" aria-hidden="true"></span>
                     </a>
-                    <a href="#tratamentos" class="btn-ghost">
-                        Conhecer Tratamentos
-                    </a>
+                    <a href="#tratamentos" class="btn-ghost">Ver Tratamentos</a>
                 </div>
-
             </div>
         </div>
 
-        <!-- Badge lateral -->
         <div class="side-badge" id="sideBadge" aria-hidden="true">
             <span class="side-badge__text">Est. 2024</span>
             <div class="side-badge__line"></div>
         </div>
-
     </section>
 
-
-    <!-- ── Sobre ─────────────────────────────────── -->
+    <!-- Sobre -->
     <section class="sobre" id="sobre">
-        <canvas id="sobreCanvas" aria-hidden="true"></canvas>
-        <div class="sobre__fade-top" aria-hidden="true"></div>
-
         <div class="sobre__inner">
-
-            <!-- Coluna de texto -->
             <div class="sobre__text-col">
-
                 <p class="sobre__eyebrow" id="sobreEyebrow">Quem é Laís</p>
 
                 <h2 class="sobre__title">
-                    <span class="sobre__title-line">
-                        <span class="sobre__title-inner" id="stl1">Beleza que</span>
-                    </span>
-                    <span class="sobre__title-line">
-                        <span class="sobre__title-inner" id="stl2">nasce da</span>
-                    </span>
-                    <span class="sobre__title-line">
-                        <span class="sobre__title-inner" id="stl3"><em>sua</em> essência.</span>
-                    </span>
+                    <span class="sobre__title-line"><span class="sobre__title-inner" id="stl1">Beleza que</span></span>
+                    <span class="sobre__title-line"><span class="sobre__title-inner" id="stl2">nasce da</span></span>
+                    <span class="sobre__title-line"><span class="sobre__title-inner" id="stl3"><em>sua</em> essência.</span></span>
                 </h2>
 
                 <div class="sobre__divider" id="sobreDivider"></div>
@@ -1004,10 +919,8 @@
                         <span class="sobre__stat-label">Protocolos exclusivos</span>
                     </div>
                 </div>
-
             </div>
 
-            <!-- Coluna da foto — sangra até a borda direita -->
             <div class="sobre__photo-col" id="sobrePhotoCol">
                 <img
                     class="sobre__photo"
@@ -1019,13 +932,62 @@
                     height="1200"
                 >
             </div>
-
         </div>
     </section>
 
+    <!-- Tratamentos -->
+    <section class="trat" id="tratamentos">
+        <div class="trat__inner">
+            <div class="trat__header">
+                <p class="trat__eyebrow" id="tratEyebrow">Protocolos</p>
+                <h2 class="trat__title">
+                    <span class="trat__title-line"><span class="trat__title-inner" id="ttl1">Cada tratamento,</span></span>
+                    <span class="trat__title-line"><span class="trat__title-inner" id="ttl2">um resultado <em>real.</em></span></span>
+                </h2>
+            </div>
 
-    <!-- ── Scripts ──────────────────────────────── -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+            <div class="trat__grid" id="tratGrid">
+                <div class="trat__card">
+                    <span class="trat__num">01</span>
+                    <h3 class="trat__name">Limpeza<br>Profunda</h3>
+                    <p class="trat__desc">Desobstrução criteriosa com extração e remoção de impurezas profundas para pele limpa, saudável e renovada.</p>
+                    <span class="trat__arrow" aria-hidden="true">→</span>
+                </div>
+                <div class="trat__card">
+                    <span class="trat__num">02</span>
+                    <h3 class="trat__name">Peeling<br>Químico</h3>
+                    <p class="trat__desc">Renovação celular com ácidos de alta performance para textura uniforme, manchas atenuadas e luminosidade real.</p>
+                    <span class="trat__arrow" aria-hidden="true">→</span>
+                </div>
+                <div class="trat__card">
+                    <span class="trat__num">03</span>
+                    <h3 class="trat__name">Microagulhamento<br>Facial</h3>
+                    <p class="trat__desc">Indução de colágeno via microcanais para firmeza progressiva, preenchimento de linhas e rejuvenescimento profundo.</p>
+                    <span class="trat__arrow" aria-hidden="true">→</span>
+                </div>
+                <div class="trat__card">
+                    <span class="trat__num">04</span>
+                    <h3 class="trat__name">Radiofrequência<br>Facial</h3>
+                    <p class="trat__desc">Tensionamento térmico não invasivo para efeito lifting duradouro e definição do contorno facial.</p>
+                    <span class="trat__arrow" aria-hidden="true">→</span>
+                </div>
+                <div class="trat__card">
+                    <span class="trat__num">05</span>
+                    <h3 class="trat__name">Hidratação<br>Intensiva</h3>
+                    <p class="trat__desc">Reposição profunda com ativos de última geração para pele plena, nutrida e com viço visível desde a primeira sessão.</p>
+                    <span class="trat__arrow" aria-hidden="true">→</span>
+                </div>
+                <div class="trat__card">
+                    <span class="trat__num">06</span>
+                    <h3 class="trat__name">Bioestimulação<br>de Colágeno</h3>
+                    <p class="trat__desc">Ativação da produção natural de colágeno para rejuvenescimento progressivo e resultados naturais e duradouros.</p>
+                    <span class="trat__arrow" aria-hidden="true">→</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
@@ -1033,171 +995,46 @@
     <script>
         gsap.registerPlugin(ScrollTrigger);
 
-        /* ══════════════════════════════════════════
-           WebGL FBM Ouro Vivo — Hero
-           UV normalizados por aspect + offset zero
-        ══════════════════════════════════════════ */
-        (function () {
-            const canvas = document.getElementById('bgCanvas');
-            if (!canvas || typeof THREE === 'undefined') return;
-
-            const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: false });
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.8));
-
-            const scene  = new THREE.Scene();
-            const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-
-            const uniforms = {
-                uTime:    { value: 0.0 },
-                uMouse:   { value: new THREE.Vector2(0.5, 0.5) },
-                uYOffset: { value: 0.0 },
-            };
-
-            const mat = new THREE.ShaderMaterial({
-                uniforms,
-                vertexShader: `
-                    varying vec2 vUv;
-                    void main() {
-                        vUv = uv;
-                        gl_Position = vec4(position, 1.0);
-                    }
-                `,
-                fragmentShader: `
-                    precision mediump float;
-                    varying vec2 vUv;
-                    uniform float uTime;
-                    uniform vec2  uMouse;
-                    uniform float uYOffset;
-
-                    float hash(vec2 p) {
-                        p = fract(p * vec2(234.34, 435.345));
-                        p += dot(p, p + 34.23);
-                        return fract(p.x * p.y);
-                    }
-
-                    float vnoise(vec2 p) {
-                        vec2 i = floor(p);
-                        vec2 f = fract(p);
-                        vec2 u = f * f * (3.0 - 2.0 * f);
-                        return mix(
-                            mix(hash(i),                hash(i + vec2(1.0, 0.0)), u.x),
-                            mix(hash(i + vec2(0.0,1.0)), hash(i + vec2(1.0,1.0)), u.x),
-                            u.y
-                        );
-                    }
-
-                    float fbm(vec2 p) {
-                        float v = 0.0, a = 0.5;
-                        mat2 m = mat2(0.866, 0.5, -0.5, 0.866);
-                        for (int i = 0; i < 5; i++) {
-                            v += a * vnoise(p);
-                            p  = m * p * 2.1 + vec2(100.0);
-                            a *= 0.5;
-                        }
-                        return v;
-                    }
-
-                    void main() {
-                        vec2 uv  = vec2(vUv.x, vUv.y + uYOffset);
-                        float T  = uTime * 0.062;
-
-                        vec2 q = vec2(
-                            fbm(uv * 2.8 + T * 0.9),
-                            fbm(uv * 2.8 + vec2(5.2, 1.3) + T * 0.7)
-                        );
-                        vec2 r = vec2(
-                            fbm(uv * 2.2 + 3.6 * q + vec2(1.7, 9.2) + T * 0.5),
-                            fbm(uv * 2.2 + 3.6 * q + vec2(8.3, 2.8) + T * 0.42)
-                        );
-                        float f = fbm(uv * 1.8 + 4.2 * r + T * 0.3);
-
-                        float vein = 1.0 - abs(fbm(uv * 4.8 + r * 2.0 + T * 0.6) * 2.0 - 1.0);
-                        vein = pow(max(vein, 0.0), 2.2) * 0.25;
-                        f = clamp(f * 0.88 + vein, 0.0, 1.0);
-
-                        vec2 mUV    = vec2(uMouse.x, uMouse.y + uYOffset);
-                        float mdist = length(uv - mUV);
-                        f += exp(-mdist * mdist * 8.0) * 0.18;
-                        f  = pow(clamp(f, 0.0, 1.0), 0.7);
-
-                        vec3 c0 = vec3(0.980, 0.974, 0.970);
-                        vec3 c1 = vec3(0.962, 0.938, 0.928);
-                        vec3 c2 = vec3(0.898, 0.820, 0.800);
-                        vec3 c3 = vec3(0.784, 0.635, 0.596);
-                        vec3 c4 = vec3(0.643, 0.451, 0.396);
-
-                        vec3 col = mix(c0, c1, smoothstep(0.00, 0.28, f));
-                        col = mix(col, c2, smoothstep(0.26, 0.52, f));
-                        col = mix(col, c3, smoothstep(0.50, 0.76, f));
-                        col = mix(col, c4, smoothstep(0.74, 1.00, f));
-
-                        float vign = 1.0 - dot(vUv - 0.5, vUv - 0.5) * 0.30;
-                        col *= clamp(vign, 0.82, 1.0);
-
-                        gl_FragColor = vec4(col, 1.0);
-                    }
-                `,
-            });
-
-            scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), mat));
-
-            function onResize() {
-                const w = canvas.offsetWidth  || window.innerWidth;
-                const h = canvas.offsetHeight || window.innerHeight;
-                renderer.setSize(w, h);
-            }
-            onResize();
-            window.addEventListener('resize', onResize, { passive: true });
-
-            const heroEl = document.getElementById('hero');
-            document.addEventListener('mousemove', e => {
-                const r = heroEl ? heroEl.getBoundingClientRect() : null;
-                const w = r ? r.width  : window.innerWidth;
-                const h = r ? r.height : window.innerHeight;
-                const x = r ? e.clientX - r.left : e.clientX;
-                const y = r ? e.clientY - r.top  : e.clientY;
-                uniforms.uMouse.value.set(x / w, 1.0 - y / h);
-            }, { passive: true });
-
-            gsap.ticker.add(time => {
-                uniforms.uTime.value = time;
-                renderer.render(scene, camera);
-            });
-        })();
-
-        /* ── Detecção de ambiente ──────────────────── */
         const isTouch   = window.matchMedia('(hover: none)').matches;
         const isMobile  = window.matchMedia('(max-width: 768px)').matches;
         const reducedMo = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-        /* ── Estados GSAP iniciais ─────────────────── */
-        gsap.set('#loaderTagline', { y: 10 }); /* para o y:0 da timeline do loader */
+        /* ── Cursor customizado (desktop only) ── */
+        if (window.matchMedia('(hover: hover) and (pointer: fine)').matches && !reducedMo) {
+            const cursorEl = document.createElement('div');
+            cursorEl.className = 'cursor';
+            document.body.appendChild(cursorEl);
+            const cx = gsap.quickTo(cursorEl, 'x', { duration: 0.55, ease: 'power3.out' });
+            const cy = gsap.quickTo(cursorEl, 'y', { duration: 0.55, ease: 'power3.out' });
+            window.addEventListener('mousemove', e => { cx(e.clientX); cy(e.clientY); }, { passive: true });
+        }
+
+        /* ── Estados iniciais ── */
+        gsap.set('#loaderTagline', { y: 10 });
         gsap.set('#navLogo, #navMenu, #navBurger', { opacity: 0, y: -10 });
         gsap.set('#heroEyebrow, #heroSubtitle, #heroCta', { opacity: 0, y: 16 });
         gsap.set('#heroImageCol, #sideBadge', { opacity: 0 });
-        gsap.set('.title-line__inner', { y: '106%' }); /* clip reveal inicial */
+        gsap.set('.title-line__inner', { y: '106%' });
 
-        /* ── Lenis smooth scroll (só no desktop) ───── */
+        /* ── Lenis (desktop only) ── */
         if (!isTouch) {
             try {
                 const lenis = new Lenis({ lerp: 0.08, smoothWheel: true });
                 gsap.ticker.add(t => lenis.raf(t * 1000));
                 gsap.ticker.lagSmoothing(0);
-                /* Sincroniza ScrollTrigger com o scroll suavizado do Lenis */
                 lenis.on('scroll', ScrollTrigger.update);
             } catch (e) {
                 console.warn('[Lenis] scroll nativo ativo.', e);
             }
         }
 
-
-        /* ── Nav: frosted glass ao rolar ───────────── */
+        /* ── Nav frosted glass ── */
         const navEl = document.getElementById('nav');
         window.addEventListener('scroll', () => {
             navEl.classList.toggle('is-scrolled', window.scrollY > 40);
         }, { passive: true });
 
-        /* ── Hamburger / Mobile Menu ───────────────── */
+        /* ── Hamburger ── */
         const burger     = document.getElementById('navBurger');
         const mobileMenu = document.getElementById('mobileMenu');
         let menuOpen = false;
@@ -1211,17 +1048,10 @@
         }
 
         burger.addEventListener('click', () => toggleMenu());
+        mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => toggleMenu(false)));
+        document.addEventListener('keydown', e => { if (e.key === 'Escape' && menuOpen) toggleMenu(false); });
 
-        mobileMenu.querySelectorAll('a').forEach(a => {
-            a.addEventListener('click', () => toggleMenu(false));
-        });
-
-        /* Fecha menu com ESC */
-        document.addEventListener('keydown', e => {
-            if (e.key === 'Escape' && menuOpen) toggleMenu(false);
-        });
-
-        /* ── Loader ────────────────────────────────── */
+        /* ── Loader ── */
         let heroStarted = false;
 
         function safeStartHero() {
@@ -1231,10 +1061,8 @@
             startHero();
         }
 
-        /* Fallback: garante que o conteúdo aparece mesmo se o loader travar */
         const loaderFallback = setTimeout(safeStartHero, 5000);
 
-        /* Loader — reveal editorial elegante, sempre via GSAP */
         gsap.timeline({
             onComplete() {
                 clearTimeout(loaderFallback);
@@ -1242,20 +1070,13 @@
                 safeStartHero();
             }
         })
-        /* Nome sobe do clip (overflow: hidden no wrapper) */
         .to('#loaderWordmark', { y: '0%', duration: 1.1, ease: 'power4.out' })
-        /* Linha dourada se expande a partir do centro */
-        .to('#loaderRule', {
-            width: 120, opacity: 1, duration: 0.9, ease: 'power3.out'
-        }, '-=0.5')
-        /* Tagline em ouro surge */
+        .to('#loaderRule', { width: 120, opacity: 1, duration: 0.9, ease: 'power3.out' }, '-=0.5')
         .to('#loaderTagline', { opacity: 1, y: 0, duration: 0.7, ease: 'power2.out' }, '-=0.4')
-        /* Pausa para apreciar */
         .to({}, { duration: 0.7 })
-        /* Loader desliza para cima */
         .to('#loader', { yPercent: -100, duration: 1.1, ease: 'power4.inOut' });
 
-        /* ── Hero — Animações de entrada ───────────── */
+        /* ── Hero ── */
         function startHero() {
             if (reducedMo) {
                 gsap.set('#navLogo, #navMenu, #navBurger', { opacity: 1, y: 0 });
@@ -1265,199 +1086,34 @@
                 return;
             }
 
-            const speed = isMobile ? 0.85 : 1.0; /* mobile ligeiramente mais rápido */
-            const tl    = gsap.timeline({ defaults: { ease: 'power4.out' } });
-
-            tl
-            /* Nav */
-            .to('#navLogo',   { opacity: 1, y: 0, duration: speed },        0.00)
-            .to('#navMenu',   { opacity: 1, y: 0, duration: speed },        0.10)
-            .to('#navBurger', { opacity: 1, y: 0, duration: speed },        0.10)
-
-            /* Foto */
-            .to('#heroImageCol', {
-                opacity: 1, duration: isMobile ? 1.4 : 2.0, ease: 'power2.out'
-            }, 0.15)
-
-            /* Eyebrow */
-            .to('#heroEyebrow', { opacity: 1, y: 0, duration: speed }, 0.35)
-
-            /* Título — clip reveal linha a linha */
-            .to('.title-line__inner', {
-                y: '0%', duration: isMobile ? 1.1 : 1.5, stagger: 0.12, ease: 'power4.out'
-            }, 0.48)
-
-            /* Subtítulo */
-            .to('#heroSubtitle', { opacity: 1, y: 0, duration: speed }, 0.88)
-
-            /* CTA */
-            .to('#heroCta', { opacity: 1, y: 0, duration: speed }, 1.02)
-
-            /* Badge */
-            .to('#sideBadge', { opacity: 1, duration: 1.0 }, 1.28);
+            const speed = isMobile ? 0.85 : 1.0;
+            gsap.timeline({ defaults: { ease: 'power4.out' } })
+            .to('#navLogo',          { opacity: 1, y: 0, duration: speed },                   0.00)
+            .to('#navMenu',          { opacity: 1, y: 0, duration: speed },                   0.10)
+            .to('#navBurger',        { opacity: 1, y: 0, duration: speed },                   0.10)
+            .to('#heroImageCol',     { opacity: 1, duration: isMobile ? 1.4 : 2.0, ease: 'power2.out' }, 0.15)
+            .to('#heroEyebrow',      { opacity: 1, y: 0, duration: speed },                   0.35)
+            .to('.title-line__inner',{ y: '0%', duration: isMobile ? 1.1 : 1.5, stagger: 0.12 }, 0.48)
+            .to('#heroSubtitle',     { opacity: 1, y: 0, duration: speed },                   0.88)
+            .to('#heroCta',          { opacity: 1, y: 0, duration: speed },                   1.02)
+            .to('#sideBadge',        { opacity: 1, duration: 1.0 },                           1.28);
         }
 
-        /* ── Parallax ao mover o mouse (desktop) ─────── */
-        /* quickTo cria um setter reutilizável — sem new tween por evento,
-           sem overwrite nos anéis que têm float ativo */
+        /* ── Parallax da foto no hero (desktop) ── */
         if (!isTouch && !isMobile && !reducedMo) {
             const pxX = gsap.quickTo('#heroImageCol', 'x', { duration: 1.8, ease: 'power2.out' });
             const pxY = gsap.quickTo('#heroImageCol', 'y', { duration: 1.8, ease: 'power2.out' });
-
             document.addEventListener('mousemove', e => {
-                const xR = (e.clientX / window.innerWidth  - 0.5);
-                const yR = (e.clientY / window.innerHeight - 0.5);
-                pxX(xR * 20);
-                pxY(yR *  8);
+                pxX((e.clientX / window.innerWidth  - 0.5) * 20);
+                pxY((e.clientY / window.innerHeight - 0.5) *  8);
             });
         }
 
-        /* ══════════════════════════════════════════
-           WebGL FBM Ouro Vivo — Sobre
-           uYOffset = -(heroH / sobreH): topo do Sobre
-           continua exatamente onde o hero termina
-        ══════════════════════════════════════════ */
-        (function () {
-            const canvas  = document.getElementById('sobreCanvas');
-            const sobreEl = document.getElementById('sobre');
-            if (!canvas || !sobreEl || typeof THREE === 'undefined') return;
-
-            const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: false });
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
-
-            const scene  = new THREE.Scene();
-            const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-
-            const uniforms = {
-                uTime:    { value: 0.0 },
-                uMouse:   { value: new THREE.Vector2(0.5, 0.5) },
-                uYOffset: { value: -1.0 },
-            };
-
-            const mat = new THREE.ShaderMaterial({
-                uniforms,
-                vertexShader: `
-                    varying vec2 vUv;
-                    void main() {
-                        vUv = uv;
-                        gl_Position = vec4(position, 1.0);
-                    }
-                `,
-                fragmentShader: `
-                    precision mediump float;
-                    varying vec2 vUv;
-                    uniform float uTime;
-                    uniform vec2  uMouse;
-                    uniform float uYOffset;
-
-                    float hash(vec2 p) {
-                        p = fract(p * vec2(234.34, 435.345));
-                        p += dot(p, p + 34.23);
-                        return fract(p.x * p.y);
-                    }
-
-                    float vnoise(vec2 p) {
-                        vec2 i = floor(p);
-                        vec2 f = fract(p);
-                        vec2 u = f * f * (3.0 - 2.0 * f);
-                        return mix(
-                            mix(hash(i),                hash(i + vec2(1.0, 0.0)), u.x),
-                            mix(hash(i + vec2(0.0,1.0)), hash(i + vec2(1.0,1.0)), u.x),
-                            u.y
-                        );
-                    }
-
-                    float fbm(vec2 p) {
-                        float v = 0.0, a = 0.5;
-                        mat2 m = mat2(0.866, 0.5, -0.5, 0.866);
-                        for (int i = 0; i < 5; i++) {
-                            v += a * vnoise(p);
-                            p  = m * p * 2.1 + vec2(100.0);
-                            a *= 0.5;
-                        }
-                        return v;
-                    }
-
-                    void main() {
-                        vec2 uv  = vec2(vUv.x, vUv.y + uYOffset);
-                        float T  = uTime * 0.062;
-
-                        vec2 q = vec2(
-                            fbm(uv * 2.8 + T * 0.9),
-                            fbm(uv * 2.8 + vec2(5.2, 1.3) + T * 0.7)
-                        );
-                        vec2 r = vec2(
-                            fbm(uv * 2.2 + 3.6 * q + vec2(1.7, 9.2) + T * 0.5),
-                            fbm(uv * 2.2 + 3.6 * q + vec2(8.3, 2.8) + T * 0.42)
-                        );
-                        float f = fbm(uv * 1.8 + 4.2 * r + T * 0.3);
-
-                        float vein = 1.0 - abs(fbm(uv * 4.8 + r * 2.0 + T * 0.6) * 2.0 - 1.0);
-                        vein = pow(max(vein, 0.0), 2.2) * 0.25;
-                        f = clamp(f * 0.88 + vein, 0.0, 1.0);
-
-                        vec2 mUV    = vec2(uMouse.x, uMouse.y + uYOffset);
-                        float mdist = length(uv - mUV);
-                        f += exp(-mdist * mdist * 8.0) * 0.18;
-                        f  = pow(clamp(f, 0.0, 1.0), 0.7);
-
-                        vec3 c0 = vec3(0.980, 0.974, 0.970);
-                        vec3 c1 = vec3(0.962, 0.938, 0.928);
-                        vec3 c2 = vec3(0.898, 0.820, 0.800);
-                        vec3 c3 = vec3(0.784, 0.635, 0.596);
-                        vec3 c4 = vec3(0.643, 0.451, 0.396);
-
-                        vec3 col = mix(c0, c1, smoothstep(0.00, 0.28, f));
-                        col = mix(col, c2, smoothstep(0.26, 0.52, f));
-                        col = mix(col, c3, smoothstep(0.50, 0.76, f));
-                        col = mix(col, c4, smoothstep(0.74, 1.00, f));
-
-                        float vign = 1.0 - dot(vUv - 0.5, vUv - 0.5) * 0.30;
-                        col *= clamp(vign, 0.82, 1.0);
-
-                        gl_FragColor = vec4(col, 1.0);
-                    }
-                `,
-            });
-
-            scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), mat));
-
-            document.addEventListener('mousemove', e => {
-                const r = sobreEl.getBoundingClientRect();
-                if (e.clientY < r.top - 150 || e.clientY > r.bottom + 150) return;
-                uniforms.uMouse.value.set(
-                    (e.clientX - r.left) / r.width,
-                    1.0 - (e.clientY - r.top) / r.height
-                );
-            }, { passive: true });
-
-            function sizeRenderer() {
-                const w = canvas.offsetWidth  || window.innerWidth;
-                const h = canvas.offsetHeight || sobreEl.offsetHeight || window.innerHeight;
-                renderer.setSize(w, h);
-            }
-            requestAnimationFrame(sizeRenderer);
-            window.addEventListener('resize', sizeRenderer, { passive: true });
-
-            let sobreVisible = false;
-            new IntersectionObserver(
-                ([entry]) => { sobreVisible = entry.isIntersecting; },
-                { rootMargin: '150px' }
-            ).observe(sobreEl);
-
-            gsap.ticker.add(time => {
-                if (!sobreVisible) return;
-                uniforms.uTime.value = time;
-                renderer.render(scene, camera);
-            });
-        })();
-
-        /* ── Sobre: animações de entrada (ScrollTrigger) ── */
+        /* ── Sobre: ScrollTrigger ── */
         (function () {
             const sobre = document.getElementById('sobre');
             if (!sobre) return;
 
-            /* Estados iniciais */
             gsap.set('#sobreEyebrow',       { opacity: 0, x: -20 });
             gsap.set('.sobre__title-inner', { y: '106%' });
             gsap.set('#sobreDivider',       { width: 0 });
@@ -1466,46 +1122,47 @@
             gsap.set('.sobre__stat',        { opacity: 0, y: 22 });
             gsap.set('#sobrePhoto',         { opacity: 0, scale: 1.06 });
 
-            const tl = gsap.timeline({
-                scrollTrigger: {
-                    trigger: sobre,
-                    start: 'top 72%',
-                    toggleActions: 'play none none none',
-                },
+            gsap.timeline({
+                scrollTrigger: { trigger: sobre, start: 'top 72%', toggleActions: 'play none none none' },
                 defaults: { ease: 'power4.out' },
-            });
-
-            tl
-            .to('#sobreEyebrow',       { opacity: 1, x: 0,     duration: 0.9 },               0.00)
-            .to('.sobre__title-inner', { y: '0%',               duration: 1.4, stagger: 0.12 }, 0.18)
-            .to('#sobreDivider',       { width: 88,             duration: 1.0 },               0.62)
-            .to('#sobreQuote',         { opacity: 1, y: 0,      duration: 1.0 },               0.76)
-            .to('#sobreBio',           { opacity: 1, y: 0,      duration: 1.0 },               0.94)
-            .to('.sobre__stat',        { opacity: 1, y: 0,      duration: 0.7, stagger: 0.12 }, 1.10)
+            })
+            .to('#sobreEyebrow',       { opacity: 1, x: 0,      duration: 0.9 },               0.00)
+            .to('.sobre__title-inner', { y: '0%',                duration: 1.4, stagger: 0.12 }, 0.18)
+            .to('#sobreDivider',       { width: 88,              duration: 1.0 },               0.62)
+            .to('#sobreQuote',         { opacity: 1, y: 0,       duration: 1.0 },               0.76)
+            .to('#sobreBio',           { opacity: 1, y: 0,       duration: 1.0 },               0.94)
+            .to('.sobre__stat',        { opacity: 1, y: 0,       duration: 0.7, stagger: 0.12 }, 1.10)
             .to('#sobrePhoto',         { opacity: 1, scale: 1.0, duration: 2.2, ease: 'power2.out' }, 0.05);
 
-            /* Contadores numéricos */
             document.querySelectorAll('.sobre__stat-num').forEach((el, i) => {
                 const target = parseInt(el.dataset.target, 10);
                 const obj    = { val: 0 };
                 gsap.to(obj, {
-                    val: target,
-                    duration: 2.0,
-                    ease: 'power2.out',
-                    delay: i * 0.14,
-                    snap: { val: 1 },
-                    scrollTrigger: {
-                        trigger: '#sobreStats',
-                        start: 'top 82%',
-                        once: true,
-                    },
+                    val: target, duration: 2.0, ease: 'power2.out',
+                    delay: i * 0.14, snap: { val: 1 },
+                    scrollTrigger: { trigger: '#sobreStats', start: 'top 82%', once: true },
                     onUpdate() { el.textContent = Math.round(obj.val); },
                 });
             });
         })();
 
+        /* ── Tratamentos: ScrollTrigger ── */
+        (function () {
+            const trat = document.getElementById('tratamentos');
+            if (!trat || reducedMo) return;
 
+            gsap.set('#tratEyebrow',        { opacity: 0, x: -16 });
+            gsap.set('.trat__title-inner',  { y: '106%' });
+            gsap.set('.trat__card',         { opacity: 0, y: 32 });
+
+            gsap.timeline({
+                scrollTrigger: { trigger: trat, start: 'top 70%', toggleActions: 'play none none none' },
+                defaults: { ease: 'power4.out' },
+            })
+            .to('#tratEyebrow',        { opacity: 1, x: 0, duration: 0.9 },               0.00)
+            .to('.trat__title-inner',  { y: '0%',          duration: 1.4, stagger: 0.12 }, 0.16)
+            .to('.trat__card',         { opacity: 1, y: 0, duration: 0.85, stagger: 0.09 }, 0.52);
+        })();
     </script>
-
 </body>
 </html>
