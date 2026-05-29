@@ -779,7 +779,7 @@
             position: relative;
             z-index: 2;
             display: grid;
-            grid-template-columns: 1fr 40%;
+            grid-template-columns: 52% 48%;
             min-height: 100vh;
             align-items: stretch;
         }
@@ -916,15 +916,7 @@
         }
 
         /* Degrade no topo da foto para fundir com hero */
-        .sobre__photo-col::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 60px;
-            background: linear-gradient(to bottom, var(--color-bg) 0%, transparent 100%);
-            z-index: 2;
-            pointer-events: none;
-        }
+        .sobre__photo-col::before { display: none; }
 
         /* Sombra na borda esquerda da foto — funde com a coluna de texto */
         .sobre__photo-col::after {
@@ -949,7 +941,7 @@
         /* ── Responsive ── */
         @media (max-width: 1024px) {
             .sobre__inner {
-                grid-template-columns: 1fr 44%;
+                grid-template-columns: 56% 44%;
             }
             .sobre__text-col {
                 padding: 140px 44px 100px 56px;
